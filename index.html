@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>资源导航</title>
+    <!-- 引入Bootstrap CSS -->
+    <link href="https://cdn.bootcdn.net/ajax/libs/twitter-bootstrap/5.3.0/css/bootstrap.min.css" rel="stylesheet">
+    <!-- 引入Font Awesome图标 -->
+    <link href="https://cdn.bootcdn.net/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <style>
+        :root {
+            --theme-color: #4a90e2;
+            --hover-color: #357abd;
+        }
+
+        body {
+            background-color: #f8f9fa;
+            min-height: 100vh;
+        }
+
+        .nav-card {
+            transition: transform 0.3s, box-shadow 0.3s;
+            border: none;
+            border-radius: 15px;
+        }
+
+        .nav-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 20px rgba(0,0,0,0.1);
+        }
+
+        .category-title {
+            border-left: 5px solid var(--theme-color);
+            padding-left: 1rem;
+            margin: 2rem 0;
+            color: var(--theme-color);
+        }
+
+        .search-box {
+            max-width: 600px;
+            margin: 2rem auto;
+        }
+    </style>
+</head>
+<body>
+    <div class="container py-5">
+        <!-- 头部 -->
+        <header class="text-center mb-5">
+            <h1 class="display-4 mb-3">资源导航</h1>
+            <p class="lead text-muted">快速访问常用网站</p>
+        </header>
+
+        <!-- 搜索框 -->
+        <div class="search-box">
+            <div class="input-group">
+                <input type="text" id="searchInput" class="form-control" placeholder="输入关键词搜索..." aria-label="搜索">
+                <button class="btn btn-outline-secondary" type="button">
+                    <i class="fas fa-search"></i>
+                </button>
+            </div>
+        </div>
+
+        <!-- 分类区块 -->
+        <section class="category">
+            <h3 class="category-title">常用工具</h3>
+            <div class="row g-4">
+                <div class="col-12 col-md-6 col-lg-4 col-xl-3">
+                    <a href="https://www.example.com" target="_blank" class="text-decoration-none">
+                        <div class="card nav-card h-100">
+                            <div class="card-body">
+                                <h5 class="card-title">
+                                    <i class="fas fa-search me-2"></i>
+                                    示例网站
+                                </h5>
+                                <p class="card-text text-muted">网站描述信息</p>
+                            </div>
+                        </div>
+                    </a>
+                </div>
+                <!-- 更多卡片... -->
+            </div>
+        </section>
+
+        <!-- 更多分类区块... -->
+    </div>
+
+    <!-- 页脚 -->
+    <footer class="bg-light py-4 mt-5">
+        <div class="container text-center text-muted">
+            <p>© 2023 资源导航. All rights reserved.</p>
+        </div>
+    </footer>
+
+    <!-- 脚本 -->
+    <script src="https://cdn.bootcdn.net/ajax/libs/bootstrap/5.3.0/js/bootstrap.bundle.min.js"></script>
+    <script>
+        // 搜索功能
+        document.getElementById('searchInput').addEventListener('input', function(e) {
+            const searchTerm = e.target.value.toLowerCase();
+            document.querySelectorAll('.nav-card').forEach(card => {
+                const text = card.textContent.toLowerCase();
+                card.parentElement.style.display = text.includes(searchTerm) ? 'block' : 'none';
+            });
+        });
+
+        // 示例数据（可以根据需要动态生成）
+        const categories = [
+            {
+                name: "开发工具",
+                links: [
+                    { name: "GitHub", url: "https://github.com", icon: "fa-code-branch" },
+                    { name: "CodePen", url: "https://codepen.io", icon: "fa-codepen" }
+                ]
+            },
+            // 更多分类数据...
+        ];
+    </script>
+</body>
+</html>
