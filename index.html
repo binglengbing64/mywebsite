@@ -1,273 +1,274 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="zh-CN">
 <head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>飞牛OS一键安装 XFCE（官方最轻量版本）</title>
-  <style>
-    :root{
-      --bg:#0f1720; --card:#0b1220; --muted:#9aa4b2; --accent:#7dd3fc; --glass:rgba(255,255,255,0.04);
-      --mono: 'SFMono-Regular', Consolas, 'Liberation Mono', Menlo, monospace;
-    }
-    *{box-sizing:border-box}
-    html,body{height:100%}
-    body{font-family: -apple-system,BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial; margin:0; background:linear-gradient(180deg,#071120 0%, #081426 60%); color: #333; -webkit-font-smoothing:antialiased; padding:24px}
-    .wrap{max-width:980px;margin:0 auto}
-    header{display:flex;align-items:center;gap:16px;margin-bottom:18px}
-    .logo{width:56px;height:56px;border-radius:10px;background:linear-gradient(135deg,#0ea5a4,#60a5fa);display:flex;align-items:center;justify-content:center;font-weight:700;color:#042033}
-    h1{font-size:20px;margin:0}
-    p.lead{margin:4px 0 0;color:var(--muted)}
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>XFCE 轻量级桌面一键安装指南 (飞牛OS/Debian)</title>
+    <style>
+        :root {
+            --primary-color: #2563eb;
+            --text-color: #333;
+            --bg-color: #f8f9fa;
+            --code-bg: #1e1e1e;
+            --code-text: #d4d4d4;
+            --sidebar-width: 280px;
+        }
 
-    .card{background:linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01)); border-radius:12px;padding:16px;margin-bottom:12px;box-shadow:0 6px 20px rgba(2,6,23,0.6);}
-    .section-title{display:flex;align-items:center;justify-content:space-between;gap:12px}
-    .section-title h2{font-size:16px;margin:0}
-    .note{color:var(--muted);font-size:13px;margin-top:8px}
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, "Microsoft YaHei", sans-serif;
+            line-height: 1.6;
+            color: var(--text-color);
+            background-color: var(--bg-color);
+            margin: 0;
+            display: flex;
+        }
 
-    pre{background:var(--card);padding:12px;border-radius:8px;overflow:auto;margin:12px 0;font-family:var(--mono);font-size:13px}
-    code{color:#dbeafe}
-    .cmd-row{display:flex;gap:8px;align-items:flex-start}
-    .btn{background:transparent;border:1px solid rgba(255,255,255,0.06);padding:6px 10px;border-radius:8px;color:var(--accent);cursor:pointer;font-weight:600}
-    .btn.secondary{color:var(--muted);border-style:dashed}
-    .copy-hint{font-size:12px;color:var(--muted);margin-left:8px}
+        /* Sidebar Styles */
+        .sidebar {
+            width: var(--sidebar-width);
+            height: 100vh;
+            background: white;
+            padding: 2rem;
+            position: fixed;
+            overflow-y: auto;
+            border-right: 1px solid #ddd;
+            box-sizing: border-box;
+        }
 
-    details{margin-top:8px}
-    summary{cursor:pointer;outline:none}
+        .sidebar h2 {
+            font-size: 1.2rem;
+            margin-bottom: 1rem;
+            color: var(--primary-color);
+        }
 
-    .grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:12px}
+        .sidebar ul {
+            list-style: none;
+            padding: 0;
+        }
 
-    footer{margin-top:18px;color:var(--muted);font-size:13px;text-align:center}
+        .sidebar li {
+            margin-bottom: 0.8rem;
+        }
 
-    @media (max-width:600px){body{padding:12px}.logo{width:44px;height:44px}}
-  </style>
+        .sidebar a {
+            text-decoration: none;
+            color: #555;
+            font-size: 0.95rem;
+            transition: color 0.2s;
+        }
+
+        .sidebar a:hover {
+            color: var(--primary-color);
+            font-weight: 600;
+        }
+
+        /* Main Content Styles */
+        .main-content {
+            margin-left: var(--sidebar-width);
+            padding: 2rem 4rem;
+            max-width: 900px;
+            width: 100%;
+        }
+
+        h1 {
+            font-size: 2.5rem;
+            border-bottom: 3px solid var(--primary-color);
+            padding-bottom: 0.5rem;
+            margin-bottom: 2rem;
+        }
+
+        h2 {
+            margin-top: 3rem;
+            padding-bottom: 0.5rem;
+            border-bottom: 1px solid #ddd;
+            display: flex;
+            align-items: center;
+        }
+
+        h2::before {
+            content: '#';
+            color: var(--primary-color);
+            margin-right: 0.5rem;
+            font-weight: bold;
+        }
+
+        h3 {
+            margin-top: 1.5rem;
+            color: #444;
+        }
+
+        /* Code Block Styles */
+        .code-container {
+            position: relative;
+            margin: 1rem 0;
+        }
+
+        pre {
+            background-color: var(--code-bg);
+            color: var(--code-text);
+            padding: 1.2rem;
+            border-radius: 8px;
+            overflow-x: auto;
+            font-family: 'Consolas', 'Monaco', 'Courier New', monospace;
+            font-size: 0.95rem;
+        }
+
+        .copy-btn {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            color: #fff;
+            padding: 4px 8px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 0.8rem;
+            transition: background 0.2s;
+        }
+
+        .copy-btn:hover {
+            background: rgba(255, 255, 255, 0.2);
+        }
+
+        /* Callout/Alert Styles */
+        .alert {
+            padding: 1rem;
+            border-radius: 6px;
+            margin: 1rem 0;
+            border-left: 4px solid;
+        }
+
+        .alert-info {
+            background-color: #e0f2fe;
+            border-color: #0284c7;
+            color: #0c4a6e;
+        }
+
+        .alert-warning {
+            background-color: #fef3c7;
+            border-color: #d97706;
+            color: #78350f;
+        }
+
+        .tag {
+            display: inline-block;
+            background: #e5e7eb;
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-weight: bold;
+            font-size: 0.9em;
+        }
+
+        @media (max-width: 768px) {
+            .sidebar {
+                display: none;
+            }
+            .main-content {
+                margin-left: 0;
+                padding: 1rem;
+            }
+        }
+    </style>
 </head>
 <body>
-  <div class="wrap">
-    <header>
-      <div class="logo">XF</div>
-      <div>
-        <h1>一键安装 XFCE（官方最轻量版本）</h1>
-        <p class="lead">含：卸载 KDE、安装 XFCE + LightDM、中文汉化、输入法、浏览器、NetworkManager、以及可复制命令按钮</p>
-      </div>
-    </header>
 
-    <div class="card">
-      <div class="section-title">
-        <h2>1. 完整卸载 KDE（可选，但推荐）</h2>
-        <div class="copy-hint">点击右侧按钮可复制命令</div>
-      </div>
-      <p class="note">如果你想保留 KDE，可跳过此步骤。</p>
-      <div class="cmd-row">
-        <pre id="cmd-kde">sudo apt remove --purge 'kde*' plasma-desktop sddm-theme-debian-breeze sddm-theme-debian-maui sddm
+    <nav class="sidebar">
+        <h2>📑 目录导航</h2>
+        <ul>
+            <li><a href="#step1">1. 卸载 KDE (清理环境)</a></li>
+            <li><a href="#step2">2. 安装 XFCE + LightDM</a></li>
+            <li><a href="#step3">3. 安装基本工具</a></li>
+            <li><a href="#cn-lang">4. XFCE 汉化方案</a></li>
+            <li><a href="#browsers">5. 安装浏览器 (Firefox/Chrome)</a></li>
+            <li><a href="#stores">6. 应用商店推荐</a></li>
+            <li><a href="#wifi">7. WiFi 网络管理配置</a></li>
+        </ul>
+    </nav>
+
+    <main class="main-content">
+        <h1>XFCE 极简安装指南 <small style="font-size:0.5em; color:#666">for Debian / 飞牛OS</small></h1>
+
+        <div class="alert alert-warning">
+            <strong>注意：</strong> 本指南适用于希望将系统轻量化的用户。如果正在使用虚拟机，推荐严格按照 LightDM 步骤操作。
+        </div>
+
+        <section id="step1">
+            <h2>1. 完整卸载 KDE (可选，但推荐)</h2>
+            <p>先卸载 KDE，如果你还没卸干净，请使用完整版卸载指令：</p>
+            <div class="code-container">
+                <button class="copy-btn" onclick="copyCode(this)">复制</button>
+                <pre>sudo apt remove --purge 'kde*' plasma-desktop sddm-theme-debian-breeze sddm-theme-debian-maui sddm
 sudo apt autoremove --purge -y</pre>
-        <div style="display:flex;flex-direction:column;gap:8px;">
-          <button class="btn" data-target="cmd-kde">复制</button>
-          <button class="btn secondary" data-run="cmd-kde">在终端运行（仅提示）</button>
-        </div>
-      </div>
-    </div>
+            </div>
+        </section>
 
-    <div class="card">
-      <div class="section-title">
-        <h2>2. 安装 XFCE + LightDM（最兼容的登录管理器）</h2>
-        <div class="copy-hint">安装时请选择 <strong>lightdm</strong></div>
-      </div>
-      <pre id="cmd-xfce">sudo apt update
+        <section id="step2">
+            <h2>2. 安装 XFCE + LightDM (最兼容)</h2>
+            <p>SDDM 在虚拟机常炸，<strong>LightDM</strong> 最稳。</p>
+            <div class="code-container">
+                <button class="copy-btn" onclick="copyCode(this)">复制</button>
+                <pre>sudo apt update
 sudo apt install xfce4 lightdm -y</pre>
-      <div style="display:flex;gap:8px;justify-content:flex-end">
-        <button class="btn" data-target="cmd-xfce">复制</button>
-      </div>
-      <details>
-        <summary>为什么选 LightDM？</summary>
-        <p class="note">SDDM 在虚拟机/某些旧驱动环境上可能崩溃，LightDM 更稳定、轻量，且兼容性好。</p>
-      </details>
-    </div>
+            </div>
+            <div class="alert alert-info">
+                💡 <strong>关键步骤：</strong> 安装时会问你使用哪个 display manager？<br>
+                请务必选择 <strong>lightdm</strong>。
+            </div>
+        </section>
 
-    <div class="card">
-      <h2>3. 安装基本工具（可选）</h2>
-      <pre id="cmd-goodies">sudo apt install xfce4-goodies -y</pre>
-      <div style="display:flex;gap:8px;justify-content:flex-end">
-        <button class="btn" data-target="cmd-goodies">复制</button>
-      </div>
-      <p class="note">此包会包含插件、电源管理、任务栏增强等。</p>
-    </div>
+        <section id="step3">
+            <h2>3. 安装基本工具 (可选)</h2>
+            <p>这会装：电源管理、小插件、任务栏增强等。</p>
+            <div class="code-container">
+                <button class="copy-btn" onclick="copyCode(this)">复制</button>
+                <pre>sudo apt install xfce4-goodies -y
+sudo reboot</pre>
+            </div>
+        </section>
 
-    <div class="card">
-      <h2>4. 重启</h2>
-      <pre id="cmd-reboot">sudo reboot</pre>
-      <div style="display:flex;gap:8px;justify-content:flex-end">
-        <button class="btn" data-target="cmd-reboot">复制</button>
-      </div>
-    </div>
-
-    <div class="card">
-      <h2>XFCE 汉化方案</h2>
-      <div class="grid">
-        <div>
-          <h3>1) 安装中文语言包（最关键）</h3>
-          <pre id="cmd-locale">sudo apt update
+        <section id="cn-lang">
+            <h2>4. XFCE 汉化方案</h2>
+            
+            <h3>① 安装中文语言包</h3>
+            <div class="code-container">
+                <button class="copy-btn" onclick="copyCode(this)">复制</button>
+                <pre>sudo apt update
 sudo apt install locales task-chinese-s -y</pre>
-          <div style="display:flex;gap:8px;justify-content:flex-end;margin-top:8px">
-            <button class="btn" data-target="cmd-locale">复制</button>
-          </div>
-        </div>
-        <div>
-          <h3>2) 生成并设为中文环境</h3>
-          <pre id="cmd-dpkg">sudo dpkg-reconfigure locales
-# 勾选: zh_CN.UTF-8 UTF-8  和 en_US.UTF-8
-# 选择 Default locale: zh_CN.UTF-8</pre>
-          <div style="display:flex;gap:8px;justify-content:flex-end;margin-top:8px">
-            <button class="btn" data-target="cmd-dpkg">复制</button>
-          </div>
-        </div>
-      </div>
+            </div>
 
-      <div style="margin-top:12px">
-        <h3>3) 安装中文字体</h3>
-        <pre id="cmd-font">sudo apt install fonts-wqy-zenhei fonts-wqy-microhei -y</pre>
-        <div style="display:flex;gap:8px;justify-content:flex-end;margin-top:8px">
-          <button class="btn" data-target="cmd-font">复制</button>
-        </div>
+            <h3>② 开启中文语言环境</h3>
+            <div class="code-container">
+                <button class="copy-btn" onclick="copyCode(this)">复制</button>
+                <pre>sudo dpkg-reconfigure locales</pre>
+            </div>
+            <ul>
+                <li>进入界面后勾选：<code>zh_CN.UTF-8 UTF-8</code></li>
+                <li>建议保留：<code>en_US.UTF-8 UTF-8</code></li>
+                <li>默认 Locale (Default locale) 选择：<strong>zh_CN.UTF-8</strong></li>
+            </ul>
 
-        <h3 style="margin-top:12px">4) 重启系统</h3>
-        <pre id="cmd-reboot2">sudo reboot</pre>
-        <div style="display:flex;gap:8px;justify-content:flex-end;margin-top:8px">
-          <button class="btn" data-target="cmd-reboot2">复制</button>
-        </div>
+            <h3>③ 安装中文字体 & 输入法</h3>
+            <div class="code-container">
+                <button class="copy-btn" onclick="copyCode(this)">复制</button>
+                <pre># 安装字体
+sudo apt install fonts-wqy-zenhei fonts-wqy-microhei -y
 
-        <p class="note">如果部分英文，进入：设置 → Language → 选择 Chinese (China)，然后注销登录。</p>
-      </div>
-    </div>
+# 安装 Fcitx5 输入法 (可选)
+sudo apt install fcitx5 fcitx5-chinese-addons -y
+im-config -n fcitx5</pre>
+            </div>
+            <p>完成后请 <code>sudo reboot</code> 重启系统。</p>
+        </section>
 
-    <div class="card">
-      <h2>输入法：安装 Fcitx5（推荐）</h2>
-      <pre id="cmd-fcitx">sudo apt install fcitx5 fcitx5-chinese-addons -y
-# 然后运行:
-im-config  # 选择 fcitx5</pre>
-      <div style="display:flex;gap:8px;justify-content:flex-end;margin-top:8px">
-        <button class="btn" data-target="cmd-fcitx">复制</button>
-      </div>
-    </div>
+        <section id="browsers">
+            <h2>5. 安装浏览器</h2>
 
-    <div class="card">
-      <h2>安装浏览器</h2>
-      <details>
-        <summary>方法 1：安装 Firefox ESR（最稳）</summary>
-        <pre id="cmd-ffesr">sudo apt update
-sudo apt install firefox-esr</pre>
-        <div style="display:flex;gap:8px;justify-content:flex-end;margin-top:8px">
-          <button class="btn" data-target="cmd-ffesr">复制</button>
-        </div>
-      </details>
+            <h3>✅ 方案 A：Firefox ESR (最稳)</h3>
+            <div class="code-container">
+                <button class="copy-btn" onclick="copyCode(this)">复制</button>
+                <pre>sudo apt install firefox-esr</pre>
+            </div>
 
-      <details>
-        <summary>方法 2：安装最新版 Firefox（添加官方仓库）</summary>
-        <pre id="cmd-ff">sudo apt install gnupg curl
-curl -fsSL https://packages.mozilla.org/apt/repo-signing-key.gpg | sudo gpg --dearmor -o /usr/share/keyrings/packages.mozilla.org.gpg
-echo "deb [signed-by=/usr/share/keyrings/packages.mozilla.org.gpg] https://packages.mozilla.org/apt mozilla main" | sudo tee /etc/apt/sources.list.d/mozilla.list
-sudo apt update
-sudo apt install firefox</pre>
-        <div style="display:flex;gap:8px;justify-content:flex-end;margin-top:8px">
-          <button class="btn" data-target="cmd-ff">复制</button>
-        </div>
-      </details>
-
-      <details>
-        <summary>方法 3：安装 Google Chrome（.deb）</summary>
-        <pre id="cmd-chrome">wget https://dl.google.com/linux/direct/google-chrome-stable_current_amd64.deb
-sudo apt install ./google-chrome-stable_current_amd64.deb
-# 注意：Chrome 不允许 root 直接运行，测试时可加 --no-sandbox（安全性降低）
-# google-chrome-stable --no-sandbox</pre>
-        <div style="display:flex;gap:8px;justify-content:flex-end;margin-top:8px">
-          <button class="btn" data-target="cmd-chrome">复制</button>
-        </div>
-      </details>
-    </div>
-
-    <div class="card">
-      <h2>应用商店推荐</h2>
-      <div class="grid">
-        <div>
-          <h3>GNOME Software（推荐）</h3>
-          <pre id="cmd-gnome">sudo apt update
-sudo apt install gnome-software gnome-software-plugin-flatpak</pre>
-          <div style="display:flex;gap:8px;justify-content:flex-end;margin-top:8px">
-            <button class="btn" data-target="cmd-gnome">复制</button>
-          </div>
-        </div>
-        <div>
-          <h3>Discover（KDE 软件中心）</h3>
-          <pre id="cmd-discover">sudo apt install plasma-discover</pre>
-          <div style="display:flex;gap:8px;justify-content:flex-end;margin-top:8px">
-            <button class="btn" data-target="cmd-discover">复制</button>
-          </div>
-        </div>
-        <div>
-          <h3>Synaptic（经典）</h3>
-          <pre id="cmd-synaptic">sudo apt install synaptic</pre>
-          <div style="display:flex;gap:8px;justify-content:flex-end;margin-top:8px">
-            <button class="btn" data-target="cmd-synaptic">复制</button>
-          </div>
-        </div>
-      </div>
-      <p class="note">安装 Flatpak 后，GNOME Software 可直接访问 Flathub。</p>
-    </div>
-
-    <div class="card">
-      <h2>NetworkManager & WiFi（飞牛OS 需要）</h2>
-      <p class="note">如果系统原本使用 ifupdown 或 systemd-networkd，请先停用它们，启用 NetworkManager。</p>
-      <pre id="cmd-nm">sudo apt install network-manager
-sudo apt install network-manager-gnome
-sudo systemctl stop networking
-sudo systemctl disable networking
-sudo systemctl stop systemd-networkd
-sudo systemctl disable systemd-networkd
-sudo systemctl enable NetworkManager
-sudo systemctl start NetworkManager
-# 在 XFCE 会话运行: nm-applet &</pre>
-      <div style="display:flex;gap:8px;justify-content:flex-end;margin-top:8px">
-        <button class="btn" data-target="cmd-nm">复制</button>
-      </div>
-      <p class="note">确认网卡是否被识别： <code>nmcli device</code></p>
-    </div>
-
-    <footer>
-      提示：页面内所有“复制”按钮会把命令复制到剪贴板。"在终端运行（仅提示）"按钮仅会展示命令，不会在你的机器上真实执行任何操作。
-    </footer>
-  </div>
-
-  <script>
-    // 复制功能
-    document.querySelectorAll('button[data-target]').forEach(btn=>{
-      btn.addEventListener('click',()=>{
-        const id = btn.getAttribute('data-target');
-        const txt = document.getElementById(id).innerText;
-        navigator.clipboard.writeText(txt).then(()=>{
-          const old = btn.innerText;
-          btn.innerText = '已复制';
-          setTimeout(()=> btn.innerText = old,1200);
-        }).catch(()=>{
-          alert('复制失败，请手动选择并复制命令');
-        });
-      });
-    });
-
-    // 仅提示（不会执行）
-    document.querySelectorAll('button[data-run]').forEach(btn=>{
-      btn.addEventListener('click',()=>{
-        const id = btn.getAttribute('data-run');
-        const txt = document.getElementById(id).innerText;
-        // 显示 modal-like alert
-        const win = window.open('', '_blank', 'width=700,height=420');
-        win.document.write('<pre style="white-space:pre-wrap;font-family:monospace;padding:16px;background: #f5f5f5;color:#e6eef6;border-radius:8px">'+
-          escapeHtml(txt)+</pre>');
-        win.document.title = '命令预览';
-      });
-    });
-
-    function escapeHtml(str){
-      return str.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
-    }
-  </script>
-</body>
-</html>
-
+            <h3>✅ 方案 B：Google Chrome (翻译好用)</h3>
+            <div class="code-container">
