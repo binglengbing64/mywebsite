@@ -272,3 +272,88 @@ im-config -n fcitx5</pre>
 
             <h3>✅ 方案 B：Google Chrome (翻译好用)</h3>
             <div class="code-container">
+
+<button class="copy-btn" onclick="copyCode(this)">复制</button>
+                <pre>wget https://dl.google.com/linux/direct/google-chrome-stable_current_amd64.deb
+sudo apt install ./google-chrome-stable_current_amd64.deb</pre>
+            </div>
+            
+            <div class="alert alert-warning">
+                <strong>Root 用户注意：</strong> Chrome 默认不允许 root 运行。解决方法：
+                <br>命令运行：<code>google-chrome-stable --no-sandbox</code>
+                <br>或者修改启动器命令为：<code>/usr/bin/google-chrome-stable --no-sandbox %u</code>
+            </div>
+        </section>
+
+        <section id="stores">
+            <h2>6. 应用商店推荐</h2>
+            <p>XFCE 本身没有商店，推荐安装 <strong>GNOME Software</strong>，兼容性最好。</p>
+            <div class="code-container">
+                <button class="copy-btn" onclick="copyCode(this)">复制</button>
+                <pre>sudo apt update
+sudo apt install gnome-software gnome-software-plugin-flatpak</pre>
+            </div>
+        </section>
+
+        <section id="wifi">
+            <h2>7. WiFi 网络管理配置 (关键)</h2>
+            <p>飞牛OS 等服务器系统通常不带 WiFi GUI，需要手动安装 NetworkManager。</p>
+
+            <h3>① 安装 NetworkManager 组件</h3>
+            <div class="code-container">
+                <button class="copy-btn" onclick="copyCode(this)">复制</button>
+                <pre>sudo apt install network-manager network-manager-gnome -y</pre>
+            </div>
+
+            <h3>② 禁用旧网络服务 & 启用新服务</h3>
+            <div class="code-container">
+                <button class="copy-btn" onclick="copyCode(this)">复制</button>
+                <pre># 停止冲突服务
+sudo systemctl stop networking
+sudo systemctl disable networking
+# 如果有 systemd-networkd 也关掉
+sudo systemctl stop systemd-networkd
+sudo systemctl disable systemd-networkd
+
+# 启用 NetworkManager
+sudo systemctl enable NetworkManager
+sudo systemctl start NetworkManager</pre>
+            </div>
+
+            <h3>③ 启动托盘图标</h3>
+            <div class="code-container">
+                <button class="copy-btn" onclick="copyCode(this)">复制</button>
+                <pre>nm-applet &</pre>
+            </div>
+            <p><em>提示：若要开机自启，请在“设置 → 会话和启动 → 应用自启动”中添加命令 <code>nm-applet</code>。</em></p>
+        </section>
+
+        <footer style="margin-top: 50px; text-align: center; color: #888; padding-bottom: 20px;">
+            <hr>
+            <p>Generated for XFCE Installation Guide</p>
+        </footer>
+    </main>
+
+    <script>
+        function copyCode(button) {
+            const pre = button.nextElementSibling;
+            const code = pre.innerText;
+            
+            navigator.clipboard.writeText(code).then(() => {
+                const originalText = button.innerText;
+                button.innerText = '已复制!';
+                button.style.background = '#10b981';
+                button.style.borderColor = '#10b981';
+                
+                setTimeout(() => {
+                    button.innerText = originalText;
+                    button.style.background = 'rgba(255, 255, 255, 0.1)';
+                    button.style.borderColor = 'rgba(255, 255, 255, 0.2)';
+                }, 2000);
+            }).catch(err => {
+                console.error('Failed to copy text: ', err);
+            });
+        }
+    </script>
+</body>
+</html>
