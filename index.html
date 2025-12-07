@@ -11,7 +11,7 @@
     }
     *{box-sizing:border-box}
     html,body{height:100%}
-    body{font-family: -apple-system,BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial; margin:0; background:linear-gradient(180deg,#071120 0%, #081426 60%); color:#e6eef6; -webkit-font-smoothing:antialiased; padding:24px}
+    body{font-family: -apple-system,BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial; margin:0; background:linear-gradient(180deg,#071120 0%, #081426 60%); color: #333; -webkit-font-smoothing:antialiased; padding:24px}
     .wrap{max-width:980px;margin:0 auto}
     header{display:flex;align-items:center;gap:16px;margin-bottom:18px}
     .logo{width:56px;height:56px;border-radius:10px;background:linear-gradient(135deg,#0ea5a4,#60a5fa);display:flex;align-items:center;justify-content:center;font-weight:700;color:#042033}
@@ -258,7 +258,7 @@ sudo systemctl start NetworkManager
         const txt = document.getElementById(id).innerText;
         // 显示 modal-like alert
         const win = window.open('', '_blank', 'width=700,height=420');
-        win.document.write('<pre style="white-space:pre-wrap;font-family:monospace;padding:16px;background:#0b1220;color:#e6eef6;border-radius:8px">'+
+        win.document.write('<pre style="white-space:pre-wrap;font-family:monospace;padding:16px;background: #f5f5f5;color:#e6eef6;border-radius:8px">'+
           escapeHtml(txt)+</pre>');
         win.document.title = '命令预览';
       });
