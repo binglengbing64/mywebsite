@@ -1,359 +1,596 @@
+
 <!DOCTYPE html>
 <html lang="zh-CN">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>XFCE 轻量级桌面一键安装指南 (飞牛OS/Debian)</title>
+    <title>冰晶博客</title>
     <style>
-        :root {
-            --primary-color: #2563eb;
-            --text-color: #333;
-            --bg-color: #f8f9fa;
-            --code-bg: #1e1e1e;
-            --code-text: #d4d4d4;
-            --sidebar-width: 280px;
-        }
-
-        body {
-            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, "Microsoft YaHei", sans-serif;
-            line-height: 1.6;
-            color: var(--text-color);
-            background-color: var(--bg-color);
+        * {
             margin: 0;
-            display: flex;
-        }
-
-        /* Sidebar Styles */
-        .sidebar {
-            width: var(--sidebar-width);
-            height: 100vh;
-            background: white;
-            padding: 2rem;
-            position: fixed;
-            overflow-y: auto;
-            border-right: 1px solid #ddd;
+            padding: 0;
             box-sizing: border-box;
         }
 
-        .sidebar h2 {
-            font-size: 1.2rem;
-            margin-bottom: 1rem;
-            color: var(--primary-color);
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+            line-height: 1.6;
+            color: #e8f4f8;
+            background: linear-gradient(135deg, #0a1628 0%, #1a2f4a 50%, #0f1f38 100%);
+            min-height: 100vh;
+            position: relative;
+            overflow-x: hidden;
         }
 
-        .sidebar ul {
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: 
+                radial-gradient(circle at 20% 30%, rgba(100, 200, 255, 0.1) 0%, transparent 50%),
+                radial-gradient(circle at 80% 70%, rgba(150, 220, 255, 0.08) 0%, transparent 50%),
+                radial-gradient(circle at 50% 50%, rgba(180, 230, 255, 0.05) 0%, transparent 40%);
+            pointer-events: none;
+            animation: shimmer 8s ease-in-out infinite;
+        }
+
+        @keyframes shimmer {
+            0%, 100% { opacity: 0.6; }
+            50% { opacity: 1; }
+        }
+
+        .snowflake {
+            position: fixed;
+            color: rgba(200, 240, 255, 0.6);
+            font-size: 20px;
+            pointer-events: none;
+            animation: fall linear infinite;
+            z-index: 1;
+        }
+
+        @keyframes fall {
+            to {
+                transform: translateY(100vh) rotate(360deg);
+            }
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+            position: relative;
+            z-index: 2;
+        }
+
+        header {
+            background: rgba(15, 35, 60, 0.7);
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(100, 200, 255, 0.2);
+            padding: 20px 0;
+            box-shadow: 0 8px 32px rgba(100, 200, 255, 0.1), inset 0 1px 0 rgba(255, 255, 255, 0.1);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            animation: slideDown 0.5s ease;
+        }
+
+        @keyframes slideDown {
+            from {
+                transform: translateY(-100%);
+                opacity: 0;
+            }
+            to {
+                transform: translateY(0);
+                opacity: 1;
+            }
+        }
+
+        nav {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+
+        .logo {
+            font-size: 28px;
+            font-weight: bold;
+            background: linear-gradient(135deg, #64d8ff 0%, #a8e6ff 50%, #ffffff 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            text-shadow: 0 0 30px rgba(100, 216, 255, 0.5);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .logo::before {
+            content: '❄️';
+            font-size: 32px;
+            filter: drop-shadow(0 0 10px rgba(100, 216, 255, 0.8));
+            animation: pulse 2s ease-in-out infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.1); }
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 30px;
             list-style: none;
-            padding: 0;
         }
 
-        .sidebar li {
-            margin-bottom: 0.8rem;
-        }
-
-        .sidebar a {
+        .nav-links a {
             text-decoration: none;
-            color: #555;
-            font-size: 0.95rem;
-            transition: color 0.2s;
+            color: #b8e2f5;
+            font-weight: 500;
+            transition: all 0.3s;
+            position: relative;
+            text-shadow: 0 0 10px rgba(100, 216, 255, 0.3);
         }
 
-        .sidebar a:hover {
-            color: var(--primary-color);
-            font-weight: 600;
+        .nav-links a:hover {
+            color: #ffffff;
+            text-shadow: 0 0 20px rgba(100, 216, 255, 0.8);
         }
 
-        /* Main Content Styles */
-        .main-content {
-            margin-left: var(--sidebar-width);
-            padding: 2rem 4rem;
-            max-width: 900px;
+        .nav-links a::after {
+            content: '';
+            position: absolute;
+            bottom: -5px;
+            left: 0;
+            width: 0;
+            height: 2px;
+            background: linear-gradient(90deg, #64d8ff, #a8e6ff);
+            box-shadow: 0 0 10px rgba(100, 216, 255, 0.8);
+            transition: width 0.3s;
+        }
+
+        .nav-links a:hover::after {
             width: 100%;
         }
 
-        h1 {
-            font-size: 2.5rem;
-            border-bottom: 3px solid var(--primary-color);
-            padding-bottom: 0.5rem;
-            margin-bottom: 2rem;
+        .hero {
+            text-align: center;
+            padding: 80px 20px;
+            animation: fadeIn 1s ease;
         }
 
-        h2 {
-            margin-top: 3rem;
-            padding-bottom: 0.5rem;
-            border-bottom: 1px solid #ddd;
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .hero h1 {
+            font-size: 56px;
+            margin-bottom: 20px;
+            background: linear-gradient(135deg, #64d8ff 0%, #ffffff 50%, #a8e6ff 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            text-shadow: 0 0 50px rgba(100, 216, 255, 0.5);
+            filter: drop-shadow(0 0 20px rgba(100, 216, 255, 0.4));
+        }
+
+        .hero p {
+            font-size: 22px;
+            color: #b8e2f5;
+            text-shadow: 0 2px 10px rgba(0, 0, 0, 0.5);
+        }
+
+        .blog-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+            gap: 30px;
+            margin-top: 40px;
+        }
+
+        .blog-card {
+            background: rgba(15, 35, 60, 0.6);
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(100, 200, 255, 0.3);
+            border-radius: 20px;
+            overflow: hidden;
+            box-shadow: 
+                0 8px 32px rgba(100, 216, 255, 0.15),
+                inset 0 1px 0 rgba(255, 255, 255, 0.1);
+            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            cursor: pointer;
+            animation: fadeInUp 0.6s ease;
+            position: relative;
+        }
+
+        .blog-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(135deg, rgba(100, 216, 255, 0.1) 0%, transparent 50%);
+            opacity: 0;
+            transition: opacity 0.3s;
+        }
+
+        .blog-card:hover::before {
+            opacity: 1;
+        }
+
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .blog-card:hover {
+            transform: translateY(-15px);
+            box-shadow: 
+                0 20px 60px rgba(100, 216, 255, 0.3),
+                inset 0 1px 0 rgba(255, 255, 255, 0.2);
+            border-color: rgba(100, 200, 255, 0.6);
+        }
+
+        .blog-image {
+            width: 100%;
+            height: 220px;
+            background: linear-gradient(135deg, rgba(30, 60, 90, 0.8) 0%, rgba(15, 40, 70, 0.9) 100%);
             display: flex;
             align-items: center;
-        }
-
-        h2::before {
-            content: '#';
-            color: var(--primary-color);
-            margin-right: 0.5rem;
-            font-weight: bold;
-        }
-
-        h3 {
-            margin-top: 1.5rem;
-            color: #444;
-        }
-
-        /* Code Block Styles */
-        .code-container {
+            justify-content: center;
+            font-size: 64px;
             position: relative;
-            margin: 1rem 0;
+            overflow: hidden;
         }
 
-        pre {
-            background-color: var(--code-bg);
-            color: var(--code-text);
-            padding: 1.2rem;
-            border-radius: 8px;
-            overflow-x: auto;
-            font-family: 'Consolas', 'Monaco', 'Courier New', monospace;
-            font-size: 0.95rem;
-        }
-
-        .copy-btn {
+        .blog-image::before {
+            content: '';
             position: absolute;
-            top: 10px;
-            right: 10px;
-            background: rgba(255, 255, 255, 0.1);
-            border: 1px solid rgba(255, 255, 255, 0.2);
-            color: #fff;
-            padding: 4px 8px;
-            border-radius: 4px;
-            cursor: pointer;
-            font-size: 0.8rem;
-            transition: background 0.2s;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: linear-gradient(
+                45deg,
+                transparent 30%,
+                rgba(100, 216, 255, 0.3) 50%,
+                transparent 70%
+            );
+            animation: shine 3s infinite;
         }
 
-        .copy-btn:hover {
-            background: rgba(255, 255, 255, 0.2);
+        @keyframes shine {
+            0% { transform: translateX(-100%) translateY(-100%) rotate(45deg); }
+            100% { transform: translateX(100%) translateY(100%) rotate(45deg); }
         }
 
-        /* Callout/Alert Styles */
-        .alert {
-            padding: 1rem;
-            border-radius: 6px;
-            margin: 1rem 0;
-            border-left: 4px solid;
+        .blog-image span {
+            position: relative;
+            z-index: 1;
+            filter: drop-shadow(0 0 20px rgba(100, 216, 255, 0.6));
         }
 
-        .alert-info {
-            background-color: #e0f2fe;
-            border-color: #0284c7;
-            color: #0c4a6e;
+        .blog-content {
+            padding: 25px;
         }
 
-        .alert-warning {
-            background-color: #fef3c7;
-            border-color: #d97706;
-            color: #78350f;
+        .blog-meta {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 15px;
+            font-size: 14px;
+            color: #7db8d6;
+        }
+
+        .blog-meta span {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .blog-title {
+            font-size: 24px;
+            margin-bottom: 15px;
+            color: #e8f4f8;
+            font-weight: 600;
+            text-shadow: 0 2px 10px rgba(100, 216, 255, 0.3);
+        }
+
+        .blog-excerpt {
+            color: #a8c9dc;
+            line-height: 1.8;
+            margin-bottom: 20px;
+        }
+
+        .read-more {
+            display: inline-block;
+            color: #64d8ff;
+            font-weight: 600;
+            text-decoration: none;
+            text-shadow: 0 0 10px rgba(100, 216, 255, 0.5);
+            transition: all 0.3s;
+        }
+
+        .read-more:hover {
+            color: #a8e6ff;
+            text-shadow: 0 0 20px rgba(100, 216, 255, 0.8);
+        }
+
+        .read-more::after {
+            content: ' →';
+            transition: transform 0.3s;
+            display: inline-block;
+        }
+
+        .read-more:hover::after {
+            transform: translateX(5px);
+        }
+
+        footer {
+            background: rgba(15, 35, 60, 0.6);
+            backdrop-filter: blur(20px);
+            border-top: 1px solid rgba(100, 200, 255, 0.2);
+            margin-top: 60px;
+            padding: 30px 20px;
+            text-align: center;
+            color: #a8c9dc;
         }
 
         .tag {
             display: inline-block;
-            background: #e5e7eb;
-            padding: 2px 6px;
-            border-radius: 4px;
-            font-weight: bold;
-            font-size: 0.9em;
+            background: rgba(100, 216, 255, 0.15);
+            border: 1px solid rgba(100, 216, 255, 0.3);
+            padding: 5px 12px;
+            border-radius: 20px;
+            font-size: 12px;
+            margin-right: 8px;
+            margin-bottom: 8px;
+            color: #64d8ff;
+            font-weight: 500;
+            backdrop-filter: blur(10px);
+            transition: all 0.3s;
+        }
+
+        .tag:hover {
+            background: rgba(100, 216, 255, 0.25);
+            border-color: rgba(100, 216, 255, 0.5);
+            box-shadow: 0 0 15px rgba(100, 216, 255, 0.4);
         }
 
         @media (max-width: 768px) {
-            .sidebar {
-                display: none;
+            .hero h1 {
+                font-size: 36px;
             }
-            .main-content {
-                margin-left: 0;
-                padding: 1rem;
+
+            .blog-grid {
+                grid-template-columns: 1fr;
             }
+
+            .nav-links {
+                gap: 15px;
+            }
+        }
+
+        .ice-crystal {
+            position: fixed;
+            pointer-events: none;
+            opacity: 0.6;
+            animation: float 6s ease-in-out infinite;
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translateY(0) rotate(0deg); }
+            50% { transform: translateY(-20px) rotate(180deg); }
         }
     </style>
 </head>
 <body>
-
-    <nav class="sidebar">
-        <h2>📑 目录导航</h2>
-        <ul>
-            <li><a href="#step1">1. 卸载 KDE (清理环境)</a></li>
-            <li><a href="#step2">2. 安装 XFCE + LightDM</a></li>
-            <li><a href="#step3">3. 安装基本工具</a></li>
-            <li><a href="#cn-lang">4. XFCE 汉化方案</a></li>
-            <li><a href="#browsers">5. 安装浏览器 (Firefox/Chrome)</a></li>
-            <li><a href="#stores">6. 应用商店推荐</a></li>
-            <li><a href="#wifi">7. WiFi 网络管理配置</a></li>
-        </ul>
-    </nav>
-
-    <main class="main-content">
-        <h1>XFCE 极简安装指南 <small style="font-size:0.5em; color:#666">for Debian / 飞牛OS</small></h1>
-
-        <div class="alert alert-warning">
-            <strong>注意：</strong> 本指南适用于希望将系统轻量化的用户。如果正在使用虚拟机，推荐严格按照 LightDM 步骤操作。
-        </div>
-
-        <section id="step1">
-            <h2>1. 完整卸载 KDE (可选，但推荐)</h2>
-            <p>先卸载 KDE，如果你还没卸干净，请使用完整版卸载指令：</p>
-            <div class="code-container">
-                <button class="copy-btn" onclick="copyCode(this)">复制</button>
-                <pre>sudo apt remove --purge 'kde*' plasma-desktop sddm-theme-debian-breeze sddm-theme-debian-maui sddm
-sudo apt autoremove --purge -y</pre>
-            </div>
-        </section>
-
-        <section id="step2">
-            <h2>2. 安装 XFCE + LightDM (最兼容)</h2>
-            <p>SDDM 在虚拟机常炸，<strong>LightDM</strong> 最稳。</p>
-            <div class="code-container">
-                <button class="copy-btn" onclick="copyCode(this)">复制</button>
-                <pre>sudo apt update
-sudo apt install xfce4 lightdm -y</pre>
-            </div>
-            <div class="alert alert-info">
-                💡 <strong>关键步骤：</strong> 安装时会问你使用哪个 display manager？<br>
-                请务必选择 <strong>lightdm</strong>。
-            </div>
-        </section>
-
-        <section id="step3">
-            <h2>3. 安装基本工具 (可选)</h2>
-            <p>这会装：电源管理、小插件、任务栏增强等。</p>
-            <div class="code-container">
-                <button class="copy-btn" onclick="copyCode(this)">复制</button>
-                <pre>sudo apt install xfce4-goodies -y
-sudo reboot</pre>
-            </div>
-        </section>
-
-        <section id="cn-lang">
-            <h2>4. XFCE 汉化方案</h2>
-            
-            <h3>① 安装中文语言包</h3>
-            <div class="code-container">
-                <button class="copy-btn" onclick="copyCode(this)">复制</button>
-                <pre>sudo apt update
-sudo apt install locales task-chinese-s -y</pre>
-            </div>
-
-            <h3>② 开启中文语言环境</h3>
-            <div class="code-container">
-                <button class="copy-btn" onclick="copyCode(this)">复制</button>
-                <pre>sudo dpkg-reconfigure locales</pre>
-            </div>
-            <ul>
-                <li>进入界面后勾选：<code>zh_CN.UTF-8 UTF-8</code></li>
-                <li>建议保留：<code>en_US.UTF-8 UTF-8</code></li>
-                <li>默认 Locale (Default locale) 选择：<strong>zh_CN.UTF-8</strong></li>
+    <header>
+        <nav>
+            <div class="logo">冰晶博客</div>
+            <ul class="nav-links">
+                <li><a href="#home">首页</a></li>
+                <li><a href="#blog">博客</a></li>
+                <li><a href="#about">关于</a></li>
+                <li><a href="#contact">联系</a></li>
             </ul>
+        </nav>
+    </header>
 
-            <h3>③ 安装中文字体 & 输入法</h3>
-            <div class="code-container">
-                <button class="copy-btn" onclick="copyCode(this)">复制</button>
-                <pre># 安装字体
-sudo apt install fonts-wqy-zenhei fonts-wqy-microhei -y
+    <div class="hero">
+        <h1>❄️ 冰晶之境 ❄️</h1>
+        <p>在冰雪世界中探索知识的奥秘</p>
+    </div>
 
-# 安装 Fcitx5 输入法 (可选)
-sudo apt install fcitx5 fcitx5-chinese-addons -y
-im-config -n fcitx5</pre>
-            </div>
-            <p>完成后请 <code>sudo reboot</code> 重启系统。</p>
-        </section>
+    <div class="container">
+        <div class="blog-grid">
+            <article class="blog-card">
+                <div class="blog-image"><span>🧊</span></div>
+                <div class="blog-content">
+                    <div class="blog-meta">
+                        <span>📅 2024-12-15</span>
+                        <span>❄️ 1.2k</span>
+                    </div>
+                    <h2 class="blog-title">冰晶动画效果实现</h2>
+                    <p class="blog-excerpt">深入探讨如何使用CSS和JavaScript创建令人惊叹的冰雪主题动画效果，包括粒子系统、光影效果和玻璃质感...</p>
+                    <div>
+                        <span class="tag">动画</span>
+                        <span class="tag">CSS</span>
+                        <span class="tag">特效</span>
+                    </div>
+                    <a href="#" class="read-more">阅读更多</a>
+                </div>
+            </article>
 
-        <section id="browsers">
-            <h2>5. 安装浏览器</h2>
+            <article class="blog-card">
+                <div class="blog-image"><span>💎</span></div>
+                <div class="blog-content">
+                    <div class="blog-meta">
+                        <span>📅 2024-12-10</span>
+                        <span>❄️ 856</span>
+                    </div>
+                    <h2 class="blog-title">玻璃拟态设计美学</h2>
+                    <p class="blog-excerpt">探索Glassmorphism设计趋势，学习如何创建透明、模糊和多层次的视觉效果，打造现代感十足的用户界面...</p>
+                    <div>
+                        <span class="tag">设计</span>
+                        <span class="tag">UI/UX</span>
+                    </div>
+                    <a href="#" class="read-more">阅读更多</a>
+                </div>
+            </article>
 
-            <h3>✅ 方案 A：Firefox ESR (最稳)</h3>
-            <div class="code-container">
-                <button class="copy-btn" onclick="copyCode(this)">复制</button>
-                <pre>sudo apt install firefox-esr</pre>
-            </div>
+            <article class="blog-card">
+                <div class="blog-image"><span>⚡</span></div>
+                <div class="blog-content">
+                    <div class="blog-meta">
+                        <span>📅 2024-12-05</span>
+                        <span>❄️ 2.1k</span>
+                    </div>
+                    <h2 class="blog-title">Canvas冰雪粒子系统</h2>
+                    <p class="blog-excerpt">从零开始构建一个完整的粒子系统，实现飘落的雪花、冰晶碎片等动态效果，附带性能优化技巧...</p>
+                    <div>
+                        <span class="tag">Canvas</span>
+                        <span class="tag">JavaScript</span>
+                    </div>
+                    <a href="#" class="read-more">阅读更多</a>
+                </div>
+            </article>
 
-            <h3>✅ 方案 B：Google Chrome (翻译好用)</h3>
-            <div class="code-container">
+            <article class="blog-card">
+                <div class="blog-image"><span>🌨️</span></div>
+                <div class="blog-content">
+                    <div class="blog-meta">
+                        <span>📅 2024-11-28</span>
+                        <span>❄️ 1.5k</span>
+                    </div>
+                    <h2 class="blog-title">SVG滤镜与冰霜效果</h2>
+                    <p class="blog-excerpt">掌握SVG滤镜的强大功能，创建逼真的冰霜、霜冻和结晶效果。从基础滤镜到复杂的组合应用...</p>
+                    <div>
+                        <span class="tag">SVG</span>
+                        <span class="tag">特效</span>
+                    </div>
+                    <a href="#" class="read-more">阅读更多</a>
+                </div>
+            </article>
 
-<button class="copy-btn" onclick="copyCode(this)">复制</button>
-                <pre>wget https://dl.google.com/linux/direct/google-chrome-stable_current_amd64.deb
-sudo apt install ./google-chrome-stable_current_amd64.deb</pre>
-            </div>
-            
-            <div class="alert alert-warning">
-                <strong>Root 用户注意：</strong> Chrome 默认不允许 root 运行。解决方法：
-                <br>命令运行：<code>google-chrome-stable --no-sandbox</code>
-                <br>或者修改启动器命令为：<code>/usr/bin/google-chrome-stable --no-sandbox %u</code>
-            </div>
-        </section>
+            <article class="blog-card">
+                <div class="blog-image"><span>🔮</span></div>
+                <div class="blog-content">
+                    <div class="blog-meta">
+                        <span>📅 2024-11-20</span>
+                        <span>❄️ 980</span>
+                    </div>
+                    <h2 class="blog-title">Three.js冰晶3D场景</h2>
+                    <p class="blog-excerpt">使用Three.js构建令人惊叹的3D冰雪场景，包括材质设置、光照系统和交互控制的完整指南...</p>
+                    <div>
+                        <span class="tag">Three.js</span>
+                        <span class="tag">3D</span>
+                    </div>
+                    <a href="#" class="read-more">阅读更多</a>
+                </div>
+            </article>
 
-        <section id="stores">
-            <h2>6. 应用商店推荐</h2>
-            <p>XFCE 本身没有商店，推荐安装 <strong>GNOME Software</strong>，兼容性最好。</p>
-            <div class="code-container">
-                <button class="copy-btn" onclick="copyCode(this)">复制</button>
-                <pre>sudo apt update
-sudo apt install gnome-software gnome-software-plugin-flatpak</pre>
-            </div>
-        </section>
+            <article class="blog-card">
+                <div class="blog-image"><span>🌟</span></div>
+                <div class="blog-content">
+                    <div class="blog-meta">
+                        <span>📅 2024-11-15</span>
+                        <span>❄️ 1.8k</span>
+                    </div>
+                    <h2 class="blog-title">极光色彩搭配指南</h2>
+                    <p class="blog-excerpt">学习北极光般梦幻的渐变配色方案，打造独特的冷色调视觉体验。包含配色工具推荐和实战案例...</p>
+                    <div>
+                        <span class="tag">配色</span>
+                        <span class="tag">设计</span>
+                    </div>
+                    <a href="#" class="read-more">阅读更多</a>
+                </div>
+            </article>
+        </div>
+    </div>
 
-        <section id="wifi">
-            <h2>7. WiFi 网络管理配置 (关键)</h2>
-            <p>飞牛OS 等服务器系统通常不带 WiFi GUI，需要手动安装 NetworkManager。</p>
-
-            <h3>① 安装 NetworkManager 组件</h3>
-            <div class="code-container">
-                <button class="copy-btn" onclick="copyCode(this)">复制</button>
-                <pre>sudo apt install network-manager network-manager-gnome -y</pre>
-            </div>
-
-            <h3>② 禁用旧网络服务 & 启用新服务</h3>
-            <div class="code-container">
-                <button class="copy-btn" onclick="copyCode(this)">复制</button>
-                <pre># 停止冲突服务
-sudo systemctl stop networking
-sudo systemctl disable networking
-# 如果有 systemd-networkd 也关掉
-sudo systemctl stop systemd-networkd
-sudo systemctl disable systemd-networkd
-
-# 启用 NetworkManager
-sudo systemctl enable NetworkManager
-sudo systemctl start NetworkManager</pre>
-            </div>
-
-            <h3>③ 启动托盘图标</h3>
-            <div class="code-container">
-                <button class="copy-btn" onclick="copyCode(this)">复制</button>
-                <pre>nm-applet &</pre>
-            </div>
-            <p><em>提示：若要开机自启，请在“设置 → 会话和启动 → 应用自启动”中添加命令 <code>nm-applet</code>。</em></p>
-        </section>
-
-        <footer style="margin-top: 50px; text-align: center; color: #888; padding-bottom: 20px;">
-            <hr>
-            <p>Generated for XFCE Installation Guide</p>
-        </footer>
-    </main>
+    <footer>
+        <p>❄️ 2024 冰晶博客 · 在寒冷中寻找温暖的知识 ❄️</p>
+    </footer>
 
     <script>
-        function copyCode(button) {
-            const pre = button.nextElementSibling;
-            const code = pre.innerText;
-            
-            navigator.clipboard.writeText(code).then(() => {
-                const originalText = button.innerText;
-                button.innerText = '已复制!';
-                button.style.background = '#10b981';
-                button.style.borderColor = '#10b981';
-                
-                setTimeout(() => {
-                    button.innerText = originalText;
-                    button.style.background = 'rgba(255, 255, 255, 0.1)';
-                    button.style.borderColor = 'rgba(255, 255, 255, 0.2)';
-                }, 2000);
-            }).catch(err => {
-                console.error('Failed to copy text: ', err);
-            });
+        // 创建飘落的雪花
+        function createSnowflake() {
+            const snowflake = document.createElement('div');
+            snowflake.classList.add('snowflake');
+            snowflake.innerHTML = ['❄', '❅', '❆'][Math.floor(Math.random() * 3)];
+            snowflake.style.left = Math.random() * 100 + '%';
+            snowflake.style.animationDuration = (Math.random() * 3 + 5) + 's';
+            snowflake.style.opacity = Math.random() * 0.6 + 0.3;
+            snowflake.style.fontSize = (Math.random() * 10 + 15) + 'px';
+            document.body.appendChild(snowflake);
+
+            setTimeout(() => {
+                snowflake.remove();
+            }, 8000);
         }
+
+        setInterval(createSnowflake, 300);
+
+        // 卡片点击效果
+        document.querySelectorAll('.blog-card').forEach(card => {
+            card.addEventListener('click', function(e) {
+                if (!e.target.classList.contains('read-more')) {
+                    const readMoreLink = this.querySelector('.read-more');
+                    if (readMoreLink) {
+                        readMoreLink.click();
+                    }
+                }
+            });
+        });
+
+        // 滚动动画
+        const observerOptions = {
+            threshold: 0.1,
+            rootMargin: '0px 0px -50px 0px'
+        };
+
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.style.animation = 'fadeInUp 0.6s ease forwards';
+                }
+            });
+        }, observerOptions);
+
+        document.querySelectorAll('.blog-card').forEach(card => {
+            observer.observe(card);
+        });
+
+        // 鼠标移动时的光效
+        document.addEventListener('mousemove', (e) => {
+            const x = e.clientX / window.innerWidth;
+            const y = e.clientY / window.innerHeight;
+            document.body.style.background = `
+                linear-gradient(135deg, 
+                    rgb(${10 + x * 20}, ${22 + x * 30}, ${40 + x * 20}) 0%, 
+                    rgb(${26 + y * 20}, ${47 + y * 30}, ${74 + y * 20}) 50%, 
+                    rgb(${15 + x * 15}, ${31 + x * 20}, ${56 + x * 15}) 100%)
+            `;
+        });
     </script>
 </body>
 </html>
