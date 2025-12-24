@@ -1,877 +1,359 @@
+
 <!DOCTYPE html>
 <html lang="zh-CN">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Word文档刷题系统</title>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/mammoth/1.6.0/mammoth.browser.min.js"></script>
+    <title>XFCE 轻量级桌面一键安装指南 (飞牛OS/Debian)</title>
     <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
+        :root {
+            --primary-color: #2563eb;
+            --text-color: #333;
+            --bg-color: #f8f9fa;
+            --code-bg: #1e1e1e;
+            --code-text: #d4d4d4;
+            --sidebar-width: 280px;
         }
 
         body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            min-height: 100vh;
-            padding: 20px;
-        }
-
-        .container {
-            max-width: 900px;
-            margin: 0 auto;
-        }
-
-        header {
-            background: white;
-            padding: 20px;
-            border-radius: 10px;
-            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
-            margin-bottom: 20px;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, "Microsoft YaHei", sans-serif;
+            line-height: 1.6;
+            color: var(--text-color);
+            background-color: var(--bg-color);
+            margin: 0;
             display: flex;
-            justify-content: space-between;
-            align-items: center;
+        }
+
+        /* Sidebar Styles */
+        .sidebar {
+            width: var(--sidebar-width);
+            height: 100vh;
+            background: white;
+            padding: 2rem;
+            position: fixed;
+            overflow-y: auto;
+            border-right: 1px solid #ddd;
+            box-sizing: border-box;
+        }
+
+        .sidebar h2 {
+            font-size: 1.2rem;
+            margin-bottom: 1rem;
+            color: var(--primary-color);
+        }
+
+        .sidebar ul {
+            list-style: none;
+            padding: 0;
+        }
+
+        .sidebar li {
+            margin-bottom: 0.8rem;
+        }
+
+        .sidebar a {
+            text-decoration: none;
+            color: #555;
+            font-size: 0.95rem;
+            transition: color 0.2s;
+        }
+
+        .sidebar a:hover {
+            color: var(--primary-color);
+            font-weight: 600;
+        }
+
+        /* Main Content Styles */
+        .main-content {
+            margin-left: var(--sidebar-width);
+            padding: 2rem 4rem;
+            max-width: 900px;
+            width: 100%;
         }
 
         h1 {
-            color: #667eea;
-            font-size: 24px;
+            font-size: 2.5rem;
+            border-bottom: 3px solid var(--primary-color);
+            padding-bottom: 0.5rem;
+            margin-bottom: 2rem;
         }
 
-        .upload-area {
-            background: white;
-            padding: 60px 40px;
-            border-radius: 10px;
-            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
-            text-align: center;
-        }
-
-        .upload-icon {
-            width: 80px;
-            height: 80px;
-            background: #e0e7ff;
-            border-radius: 50%;
-            margin: 0 auto 20px;
+        h2 {
+            margin-top: 3rem;
+            padding-bottom: 0.5rem;
+            border-bottom: 1px solid #ddd;
             display: flex;
             align-items: center;
-            justify-content: center;
-            font-size: 40px;
         }
 
-        .format-example {
-            background: #f9fafb;
-            padding: 20px;
+        h2::before {
+            content: '#';
+            color: var(--primary-color);
+            margin-right: 0.5rem;
+            font-weight: bold;
+        }
+
+        h3 {
+            margin-top: 1.5rem;
+            color: #444;
+        }
+
+        /* Code Block Styles */
+        .code-container {
+            position: relative;
+            margin: 1rem 0;
+        }
+
+        pre {
+            background-color: var(--code-bg);
+            color: var(--code-text);
+            padding: 1.2rem;
             border-radius: 8px;
-            text-align: left;
-            margin: 20px auto;
-            max-width: 600px;
-            font-size: 13px;
-            line-height: 1.8;
+            overflow-x: auto;
+            font-family: 'Consolas', 'Monaco', 'Courier New', monospace;
+            font-size: 0.95rem;
         }
 
-        .btn {
-            background: #667eea;
-            color: white;
-            border: none;
-            padding: 12px 30px;
-            border-radius: 8px;
-            cursor: pointer;
-            font-size: 16px;
-            transition: all 0.3s;
-        }
-
-        .btn:hover {
-            background: #5568d3;
-            transform: translateY(-2px);
-            box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
-        }
-
-        .btn-small {
-            padding: 8px 16px;
-            font-size: 14px;
-        }
-
-        input[type="file"] {
-            display: none;
-        }
-
-        .progress-bar {
-            background: white;
-            padding: 20px;
-            border-radius: 10px;
-            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
-            margin-bottom: 20px;
-        }
-
-        .progress-info {
-            display: flex;
-            justify-content: space-between;
-            margin-bottom: 10px;
-            font-size: 14px;
-            color: #4b5563;
-        }
-
-        .progress-track {
-            height: 8px;
-            background: #e5e7eb;
+        .copy-btn {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            color: #fff;
+            padding: 4px 8px;
             border-radius: 4px;
-            overflow: hidden;
-        }
-
-        .progress-fill {
-            height: 100%;
-            background: #667eea;
-            transition: width 0.3s;
-        }
-
-        .question-card {
-            background: white;
-            padding: 40px;
-            border-radius: 10px;
-            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
-            margin-bottom: 20px;
-        }
-
-        .question-header {
-            display: flex;
-            gap: 15px;
-            margin-bottom: 25px;
-        }
-
-        .question-number {
-            width: 40px;
-            height: 40px;
-            background: #667eea;
-            color: white;
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-weight: bold;
-            flex-shrink: 0;
-        }
-
-        .question-text {
-            flex: 1;
-            font-size: 17px;
-            color: #1f2937;
-            line-height: 1.8;
-        }
-
-        .options {
-            margin: 20px 0;
-        }
-
-        .option {
-            margin: 10px 0;
-            padding: 15px 20px;
-            background: #f9fafb;
-            border: 2px solid #e5e7eb;
-            border-radius: 8px;
             cursor: pointer;
-            transition: all 0.3s;
-            color: #1f2937;
-            line-height: 1.6;
+            font-size: 0.8rem;
+            transition: background 0.2s;
         }
 
-        .option:hover {
-            background: #eff6ff;
-            border-color: #3b82f6;
+        .copy-btn:hover {
+            background: rgba(255, 255, 255, 0.2);
         }
 
-        .option.selected {
-            background: #dbeafe;
-            border-color: #3b82f6;
-            font-weight: 500;
+        /* Callout/Alert Styles */
+        .alert {
+            padding: 1rem;
+            border-radius: 6px;
+            margin: 1rem 0;
+            border-left: 4px solid;
         }
 
-        .option.correct {
-            background: #d1fae5;
-            border-color: #10b981;
+        .alert-info {
+            background-color: #e0f2fe;
+            border-color: #0284c7;
+            color: #0c4a6e;
         }
 
-        .option.wrong {
-            background: #fee2e2;
-            border-color: #ef4444;
+        .alert-warning {
+            background-color: #fef3c7;
+            border-color: #d97706;
+            color: #78350f;
         }
 
-        .type-badge {
+        .tag {
             display: inline-block;
-            padding: 4px 12px;
-            border-radius: 12px;
-            font-size: 12px;
-            margin-top: 10px;
-        }
-
-        .badge-choice {
-            background: #dbeafe;
-            color: #1e40af;
-        }
-
-        .badge-judge {
-            background: #d1fae5;
-            color: #065f46;
-        }
-
-        .badge-fill {
-            background: #fef3c7;
-            color: #92400e;
-        }
-
-        input[type="text"] {
-            width: 100%;
-            padding: 15px;
-            border: 2px solid #e5e7eb;
-            border-radius: 8px;
-            font-size: 16px;
-            font-family: inherit;
-            transition: border-color 0.3s;
-        }
-
-        input[type="text"]:focus {
-            outline: none;
-            border-color: #667eea;
-        }
-
-        input[type="text"]:disabled {
-            background: #f9fafb;
-            cursor: not-allowed;
-        }
-
-        .result-box {
-            padding: 20px;
-            border-radius: 8px;
-            margin-top: 20px;
-        }
-
-        .result-correct {
-            background: #d1fae5;
-            border: 2px solid #10b981;
-        }
-
-        .result-wrong {
-            background: #fee2e2;
-            border: 2px solid #ef4444;
-        }
-
-        .result-header {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            margin-bottom: 15px;
-            font-weight: bold;
-        }
-
-        .result-correct .result-header {
-            color: #065f46;
-        }
-
-        .result-wrong .result-header {
-            color: #991b1b;
-        }
-
-        .result-detail {
-            font-size: 14px;
-            color: #374151;
-            margin-top: 8px;
-        }
-
-        .btn-group {
-            display: flex;
-            gap: 10px;
-            margin-top: 20px;
-        }
-
-        .btn-group button {
-            flex: 1;
-        }
-
-        .btn-secondary {
             background: #e5e7eb;
-            color: #374151;
-        }
-
-        .btn-secondary:hover {
-            background: #d1d5db;
-        }
-
-        .btn-success {
-            background: #10b981;
-        }
-
-        .btn-success:hover {
-            background: #059669;
-        }
-
-        .answer-record {
-            background: white;
-            padding: 20px;
-            border-radius: 10px;
-            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
-        }
-
-        .record-title {
+            padding: 2px 6px;
+            border-radius: 4px;
             font-weight: bold;
-            color: #1f2937;
-            margin-bottom: 15px;
+            font-size: 0.9em;
         }
 
-        .record-grid {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 8px;
-        }
-
-        .record-item {
-            width: 40px;
-            height: 40px;
-            border-radius: 8px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-weight: 500;
-            cursor: pointer;
-            transition: all 0.3s;
-        }
-
-        .record-item.unanswered {
-            background: #e5e7eb;
-            color: #6b7280;
-        }
-
-        .record-item.correct {
-            background: #10b981;
-            color: white;
-        }
-
-        .record-item.wrong {
-            background: #ef4444;
-            color: white;
-        }
-
-        .record-item.active {
-            box-shadow: 0 0 0 3px #667eea;
-        }
-
-        .hidden {
-            display: none;
-        }
-
-        .score {
-            color: #667eea;
-            font-weight: bold;
-        }
-
-        .parse-info {
-            background: #eff6ff;
-            border: 1px solid #3b82f6;
-            padding: 15px;
-            border-radius: 8px;
-            margin-top: 15px;
-            font-size: 14px;
-            color: #1e40af;
-            text-align: left;
-            max-height: 400px;
-            overflow-y: auto;
+        @media (max-width: 768px) {
+            .sidebar {
+                display: none;
+            }
+            .main-content {
+                margin-left: 0;
+                padding: 1rem;
+            }
         }
     </style>
 </head>
 <body>
-    <div class="container">
-        <header>
-            <h1>📚 Word文档刷题系统</h1>
-            <button class="btn btn-small hidden" id="resetBtn" onclick="resetQuiz()">🔄 重新开始</button>
-        </header>
 
-        <div id="uploadSection" class="upload-area">
-            <div class="upload-icon">📄</div>
-            <h2 style="margin-bottom: 10px;">上传题目文档</h2>
-            <p style="color: #6b7280; margin-bottom: 20px;">支持 Word (.docx) 格式，系统将自动解析题目和答案</p>
-            
-            <div class="format-example">
-                <strong>你的文档格式：</strong><br><br>
-                1. 算法分析的两个主要方面是（ A ）<br>
-                A、空间复杂度和时间复杂度 B、正确性和简明性<br><br>
-                
-                判断题：<br>
-                1. 数据的逻辑结构说明...（ × ）<br><br>
-                
-                填空题：<br>
-                1. 数据存储结构的基本形式有【链式存储结构】
-            </div>
+    <nav class="sidebar">
+        <h2>📑 目录导航</h2>
+        <ul>
+            <li><a href="#step1">1. 卸载 KDE (清理环境)</a></li>
+            <li><a href="#step2">2. 安装 XFCE + LightDM</a></li>
+            <li><a href="#step3">3. 安装基本工具</a></li>
+            <li><a href="#cn-lang">4. XFCE 汉化方案</a></li>
+            <li><a href="#browsers">5. 安装浏览器 (Firefox/Chrome)</a></li>
+            <li><a href="#stores">6. 应用商店推荐</a></li>
+            <li><a href="#wifi">7. WiFi 网络管理配置</a></li>
+        </ul>
+    </nav>
 
-            <label for="fileInput" class="btn">📤 选择Word文档</label>
-            <input type="file" id="fileInput" accept=".docx" onchange="handleFileUpload(event)">
-            
-            <div id="parseInfo" class="parse-info hidden"></div>
+    <main class="main-content">
+        <h1>XFCE 极简安装指南 <small style="font-size:0.5em; color:#666">for Debian / 飞牛OS</small></h1>
+
+        <div class="alert alert-warning">
+            <strong>注意：</strong> 本指南适用于希望将系统轻量化的用户。如果正在使用虚拟机，推荐严格按照 LightDM 步骤操作。
         </div>
 
-        <div id="quizSection" class="hidden">
-            <div class="progress-bar">
-                <div class="progress-info">
-                    <span>题目 <span id="currentNum">1</span> / <span id="totalNum">0</span></span>
-                    <span class="score">得分: <span id="score">0</span> / <span id="answered">0</span></span>
-                </div>
-                <div class="progress-track">
-                    <div class="progress-fill" id="progressFill"></div>
-                </div>
+        <section id="step1">
+            <h2>1. 完整卸载 KDE (可选，但推荐)</h2>
+            <p>先卸载 KDE，如果你还没卸干净，请使用完整版卸载指令：</p>
+            <div class="code-container">
+                <button class="copy-btn" onclick="copyCode(this)">复制</button>
+                <pre>sudo apt remove --purge 'kde*' plasma-desktop sddm-theme-debian-breeze sddm-theme-debian-maui sddm
+sudo apt autoremove --purge -y</pre>
+            </div>
+        </section>
+
+        <section id="step2">
+            <h2>2. 安装 XFCE + LightDM (最兼容)</h2>
+            <p>SDDM 在虚拟机常炸，<strong>LightDM</strong> 最稳。</p>
+            <div class="code-container">
+                <button class="copy-btn" onclick="copyCode(this)">复制</button>
+                <pre>sudo apt update
+sudo apt install xfce4 lightdm -y</pre>
+            </div>
+            <div class="alert alert-info">
+                💡 <strong>关键步骤：</strong> 安装时会问你使用哪个 display manager？<br>
+                请务必选择 <strong>lightdm</strong>。
+            </div>
+        </section>
+
+        <section id="step3">
+            <h2>3. 安装基本工具 (可选)</h2>
+            <p>这会装：电源管理、小插件、任务栏增强等。</p>
+            <div class="code-container">
+                <button class="copy-btn" onclick="copyCode(this)">复制</button>
+                <pre>sudo apt install xfce4-goodies -y
+sudo reboot</pre>
+            </div>
+        </section>
+
+        <section id="cn-lang">
+            <h2>4. XFCE 汉化方案</h2>
+            
+            <h3>① 安装中文语言包</h3>
+            <div class="code-container">
+                <button class="copy-btn" onclick="copyCode(this)">复制</button>
+                <pre>sudo apt update
+sudo apt install locales task-chinese-s -y</pre>
             </div>
 
-            <div class="question-card">
-                <div class="question-header">
-                    <div class="question-number" id="questionNum">1</div>
-                    <div style="flex: 1;">
-                        <div class="question-text" id="questionText"></div>
-                        <div id="optionsDiv" class="options hidden"></div>
-                        <span class="type-badge hidden" id="typeBadge"></span>
-                    </div>
-                </div>
+            <h3>② 开启中文语言环境</h3>
+            <div class="code-container">
+                <button class="copy-btn" onclick="copyCode(this)">复制</button>
+                <pre>sudo dpkg-reconfigure locales</pre>
+            </div>
+            <ul>
+                <li>进入界面后勾选：<code>zh_CN.UTF-8 UTF-8</code></li>
+                <li>建议保留：<code>en_US.UTF-8 UTF-8</code></li>
+                <li>默认 Locale (Default locale) 选择：<strong>zh_CN.UTF-8</strong></li>
+            </ul>
 
-                <div id="choiceOptions" class="options hidden"></div>
-                
-                <input type="text" id="answerInput" placeholder="请输入你的答案...">
+            <h3>③ 安装中文字体 & 输入法</h3>
+            <div class="code-container">
+                <button class="copy-btn" onclick="copyCode(this)">复制</button>
+                <pre># 安装字体
+sudo apt install fonts-wqy-zenhei fonts-wqy-microhei -y
 
-                <div id="submitSection">
-                    <button class="btn" style="width: 100%; margin-top: 20px;" onclick="checkAnswer()">✓ 提交答案</button>
-                </div>
+# 安装 Fcitx5 输入法 (可选)
+sudo apt install fcitx5 fcitx5-chinese-addons -y
+im-config -n fcitx5</pre>
+            </div>
+            <p>完成后请 <code>sudo reboot</code> 重启系统。</p>
+        </section>
 
-                <div id="resultSection" class="hidden">
-                    <div class="result-box" id="resultBox">
-                        <div class="result-header" id="resultHeader"></div>
-                        <div class="result-detail">
-                            <strong>你的答案：</strong><span id="userAns"></span>
-                        </div>
-                        <div class="result-detail" id="correctAnsDiv">
-                            <strong>正确答案：</strong><span id="correctAns"></span>
-                        </div>
-                    </div>
+        <section id="browsers">
+            <h2>5. 安装浏览器</h2>
 
-                    <div class="btn-group">
-                        <button class="btn btn-secondary" onclick="prevQuestion()" id="prevBtn">← 上一题</button>
-                        <button class="btn" onclick="nextQuestion()" id="nextBtn">下一题 →</button>
-                        <button class="btn btn-success hidden" onclick="finishQuiz()" id="finishBtn">✓ 完成测验</button>
-                    </div>
-                </div>
+            <h3>✅ 方案 A：Firefox ESR (最稳)</h3>
+            <div class="code-container">
+                <button class="copy-btn" onclick="copyCode(this)">复制</button>
+                <pre>sudo apt install firefox-esr</pre>
             </div>
 
-            <div class="answer-record hidden" id="recordSection">
-                <div class="record-title">答题记录</div>
-                <div class="record-grid" id="recordGrid"></div>
+            <h3>✅ 方案 B：Google Chrome (翻译好用)</h3>
+            <div class="code-container">
+
+<button class="copy-btn" onclick="copyCode(this)">复制</button>
+                <pre>wget https://dl.google.com/linux/direct/google-chrome-stable_current_amd64.deb
+sudo apt install ./google-chrome-stable_current_amd64.deb</pre>
             </div>
-        </div>
-    </div>
+            
+            <div class="alert alert-warning">
+                <strong>Root 用户注意：</strong> Chrome 默认不允许 root 运行。解决方法：
+                <br>命令运行：<code>google-chrome-stable --no-sandbox</code>
+                <br>或者修改启动器命令为：<code>/usr/bin/google-chrome-stable --no-sandbox %u</code>
+            </div>
+        </section>
+
+        <section id="stores">
+            <h2>6. 应用商店推荐</h2>
+            <p>XFCE 本身没有商店，推荐安装 <strong>GNOME Software</strong>，兼容性最好。</p>
+            <div class="code-container">
+                <button class="copy-btn" onclick="copyCode(this)">复制</button>
+                <pre>sudo apt update
+sudo apt install gnome-software gnome-software-plugin-flatpak</pre>
+            </div>
+        </section>
+
+        <section id="wifi">
+            <h2>7. WiFi 网络管理配置 (关键)</h2>
+            <p>飞牛OS 等服务器系统通常不带 WiFi GUI，需要手动安装 NetworkManager。</p>
+
+            <h3>① 安装 NetworkManager 组件</h3>
+            <div class="code-container">
+                <button class="copy-btn" onclick="copyCode(this)">复制</button>
+                <pre>sudo apt install network-manager network-manager-gnome -y</pre>
+            </div>
+
+            <h3>② 禁用旧网络服务 & 启用新服务</h3>
+            <div class="code-container">
+                <button class="copy-btn" onclick="copyCode(this)">复制</button>
+                <pre># 停止冲突服务
+sudo systemctl stop networking
+sudo systemctl disable networking
+# 如果有 systemd-networkd 也关掉
+sudo systemctl stop systemd-networkd
+sudo systemctl disable systemd-networkd
+
+# 启用 NetworkManager
+sudo systemctl enable NetworkManager
+sudo systemctl start NetworkManager</pre>
+            </div>
+
+            <h3>③ 启动托盘图标</h3>
+            <div class="code-container">
+                <button class="copy-btn" onclick="copyCode(this)">复制</button>
+                <pre>nm-applet &</pre>
+            </div>
+            <p><em>提示：若要开机自启，请在“设置 → 会话和启动 → 应用自启动”中添加命令 <code>nm-applet</code>。</em></p>
+        </section>
+
+        <footer style="margin-top: 50px; text-align: center; color: #888; padding-bottom: 20px;">
+            <hr>
+            <p>Generated for XFCE Installation Guide</p>
+        </footer>
+    </main>
 
     <script>
-        let questions = [];
-        let currentQuestion = 0;
-        let results = [];
-        let totalScore = 0;
-
-        function handleFileUpload(event) {
-            const file = event.target.files[0];
-            if (!file) return;
-
-            const parseInfo = document.getElementById('parseInfo');
-            parseInfo.innerHTML = '<strong>正在解析文档，请稍候...</strong>';
-            parseInfo.classList.remove('hidden');
-
-            const reader = new FileReader();
-            reader.onload = function(e) {
-                mammoth.extractRawText({arrayBuffer: e.target.result})
-                    .then(result => {
-                        const text = result.value;
-                        questions = parseQuestions(text);
-                        
-                        if (questions.length === 0) {
-                            parseInfo.innerHTML = `
-                                <strong style="color: #991b1b;">❌ 未能解析到题目</strong><br><br>
-                                请检查文档格式是否正确
-                            `;
-                            parseInfo.style.background = '#fee2e2';
-                            parseInfo.style.borderColor = '#ef4444';
-                            return;
-                        }
-                        
-                        let questionList = '<strong>✓ 成功解析 ' + questions.length + ' 道题目！</strong><br><br>';
-                        questionList += '<strong>前5道题预览：</strong><br>';
-                        questions.slice(0, 5).forEach(q => {
-                            const qText = q.question.substring(0, 40);
-                            questionList += `${q.id}. ${qText}... (${q.answer})<br>`;
-                        });
-                        if (questions.length > 5) {
-                            questionList += `<br>...共 ${questions.length} 道题`;
-                        }
-                        
-                        parseInfo.innerHTML = questionList;
-                        parseInfo.style.background = '#d1fae5';
-                        parseInfo.style.borderColor = '#10b981';
-                        parseInfo.style.color = '#065f46';
-                        
-                        setTimeout(() => {
-                            startQuiz();
-                        }, 1500);
-                    })
-                    .catch(err => {
-                        parseInfo.innerHTML = '<strong style="color: #991b1b;">❌ 文件读取失败</strong><br><br>' + err.message;
-                        parseInfo.style.background = '#fee2e2';
-                        parseInfo.style.borderColor = '#ef4444';
-                    });
-            };
-            reader.readAsArrayBuffer(file);
-        }
-
-        function parseQuestions(text) {
-            const questions = [];
-            const lines = text.split('\n').map(l => l.trim()).filter(l => l);
+        function copyCode(button) {
+            const pre = button.nextElementSibling;
+            const code = pre.innerText;
             
-            for (let i = 0; i < lines.length; i++) {
-                let line = lines[i];
+            navigator.clipboard.writeText(code).then(() => {
+                const originalText = button.innerText;
+                button.innerText = '已复制!';
+                button.style.background = '#10b981';
+                button.style.borderColor = '#10b981';
                 
-                // 匹配题目格式：1. 或 1、后面跟题目，括号中有答案
-                const questionMatch = line.match(/^(\d+)[.、]\s*(.+?)[（(]\s*([^)）]+?)\s*[)）]/);
-                
-                if (questionMatch) {
-                    const questionNum = questionMatch[1];
-                    let questionText = questionMatch[2].trim();
-                    let answer = questionMatch[3].trim();
-                    let options = [];
-                    
-                    // 检查下一行是否有选项
-                    if (i + 1 < lines.length) {
-                        const nextLine = lines[i + 1];
-                        // 检查是否是选项行（包含 A、B、C、D）
-                        if (nextLine.match(/^[A-D][、．.]/)) {
-                            // 分割选项
-                            const optionParts = nextLine.split(/(?=[A-D][、．.])/);
-                            options = optionParts.filter(opt => opt.trim()).map(opt => opt.trim());
-                            i++; // 跳过选项行
-                        }
-                    }
-                    
-                    // 判断题型
-                    let type = 'fill';
-                    if (options.length > 0) {
-                        type = 'choice';
-                    } else if (['√', '×', '对', '错', '正确', '错误'].includes(answer)) {
-                        type = 'judge';
-                    }
-                    
-                    questions.push({
-                        id: parseInt(questionNum),
-                        question: questionText,
-                        options: options,
-                        answer: answer,
-                        type: type
-                    });
-                }
-                
-                // 匹配填空题格式：题目【答案】
-                const fillMatch = line.match(/^(\d+)[.、]\s*(.+?)【(.+?)】/);
-                if (fillMatch && !questionMatch) {
-                    const questionNum = fillMatch[1];
-                    let questionText = fillMatch[2].trim();
-                    let answer = fillMatch[3].trim();
-                    
-                    questions.push({
-                        id: parseInt(questionNum),
-                        question: questionText + '______',
-                        options: [],
-                        answer: answer,
-                        type: 'fill'
-                    });
-                }
-            }
-            
-            return questions;
-        }
-
-        function startQuiz() {
-            document.getElementById('uploadSection').classList.add('hidden');
-            document.getElementById('quizSection').classList.remove('hidden');
-            document.getElementById('resetBtn').classList.remove('hidden');
-            document.getElementById('totalNum').textContent = questions.length;
-            
-            results = new Array(questions.length).fill(null);
-            displayQuestion();
-            updateRecordGrid();
-        }
-
-        let selectedChoice = '';
-
-        function displayQuestion() {
-            const q = questions[currentQuestion];
-            selectedChoice = '';
-            
-            document.getElementById('currentNum').textContent = currentQuestion + 1;
-            document.getElementById('questionNum').textContent = q.id;
-            
-            // 显示题目
-            const questionTextDiv = document.getElementById('questionText');
-            questionTextDiv.textContent = q.question;
-            
-            document.getElementById('answerInput').value = '';
-            document.getElementById('answerInput').disabled = false;
-            
-            // 隐藏旧的选项区域
-            document.getElementById('optionsDiv').classList.add('hidden');
-            
-            // 显示题型标签和对应的输入方式
-            const badge = document.getElementById('typeBadge');
-            const choiceOptions = document.getElementById('choiceOptions');
-            const answerInput = document.getElementById('answerInput');
-            
-            if (q.type === 'choice') {
-                badge.textContent = '选择题';
-                badge.className = 'type-badge badge-choice';
-                badge.classList.remove('hidden');
-                
-                // 显示选项按钮
-                choiceOptions.innerHTML = '';
-                q.options.forEach(opt => {
-                    const optDiv = document.createElement('div');
-                    optDiv.className = 'option';
-                    optDiv.textContent = opt;
-                    optDiv.onclick = function() {
-                        // 移除其他选项的选中状态
-                        document.querySelectorAll('.option').forEach(o => o.classList.remove('selected'));
-                        // 标记当前选项
-                        this.classList.add('selected');
-                        // 提取选项字母
-                        const letter = opt.match(/^([A-D])/)?.[1];
-                        selectedChoice = letter;
-                    };
-                    choiceOptions.appendChild(optDiv);
-                });
-                choiceOptions.classList.remove('hidden');
-                answerInput.classList.add('hidden');
-                
-            } else if (q.type === 'judge') {
-                badge.textContent = '判断题';
-                badge.className = 'type-badge badge-judge';
-                badge.classList.remove('hidden');
-                
-                // 显示判断题选项
-                choiceOptions.innerHTML = `
-                    <div class="option" onclick="selectJudge('√', this)">√ 正确</div>
-                    <div class="option" onclick="selectJudge('×', this)">× 错误</div>
-                `;
-                choiceOptions.classList.remove('hidden');
-                answerInput.classList.add('hidden');
-                
-            } else {
-                badge.textContent = '填空题';
-                badge.className = 'type-badge badge-fill';
-                badge.classList.remove('hidden');
-                
-                choiceOptions.classList.add('hidden');
-                answerInput.classList.remove('hidden');
-                answerInput.placeholder = '请输入答案...';
-            }
-            
-            document.getElementById('submitSection').classList.remove('hidden');
-            document.getElementById('resultSection').classList.add('hidden');
-            
-            const progress = ((currentQuestion + 1) / questions.length) * 100;
-            document.getElementById('progressFill').style.width = progress + '%';
-            
-            if (results[currentQuestion]) {
-                showResult(results[currentQuestion]);
-            }
-        }
-
-        function selectJudge(value, element) {
-            document.querySelectorAll('#choiceOptions .option').forEach(o => o.classList.remove('selected'));
-            element.classList.add('selected');
-            selectedChoice = value;
-        }
-
-        function checkAnswer() {
-            const current = questions[currentQuestion];
-            let userAnswer = '';
-            
-            // 根据题型获取答案
-            if (current.type === 'choice' || current.type === 'judge') {
-                userAnswer = selectedChoice;
-                if (!userAnswer) {
-                    alert('请选择答案');
-                    return;
-                }
-            } else {
-                userAnswer = document.getElementById('answerInput').value.trim();
-                if (!userAnswer) {
-                    alert('请输入答案');
-                    return;
-                }
-            }
-
-            let isCorrect = false;
-            
-            const userAns = userAnswer.toUpperCase().trim();
-            const correctAns = current.answer.toUpperCase().trim();
-            
-            if (current.type === 'choice') {
-                const userLetter = userAns.match(/[A-D]/)?.[0];
-                const correctLetter = correctAns.match(/[A-D]/)?.[0];
-                isCorrect = userLetter === correctLetter;
-            } else if (current.type === 'judge') {
-                const normalize = (s) => {
-                    s = s.toUpperCase();
-                    return (s === '√' || s === '对' || s === '正确') ? 'T' : 'F';
-                };
-                isCorrect = normalize(userAns) === normalize(correctAns);
-            } else {
-                isCorrect = userAns === correctAns || 
-                           correctAns.includes(userAns) || 
-                           userAns.includes(correctAns) ||
-                           userAns.replace(/\s+/g, '') === correctAns.replace(/\s+/g, '');
-            }
-            
-            const result = {
-                userAnswer: userAnswer,
-                correctAnswer: current.answer,
-                isCorrect: isCorrect
-            };
-            
-            if (!results[currentQuestion]) {
-                results[currentQuestion] = result;
-                if (isCorrect) totalScore++;
-                document.getElementById('score').textContent = totalScore;
-                document.getElementById('answered').textContent = results.filter(r => r !== null).length;
-            }
-            
-            showResult(result);
-            updateRecordGrid();
-        }
-
-        function showResult(result) {
-            document.getElementById('submitSection').classList.add('hidden');
-            document.getElementById('resultSection').classList.remove('hidden');
-            document.getElementById('answerInput').disabled = true;
-            document.getElementById('recordSection').classList.remove('hidden');
-            
-            const current = questions[currentQuestion];
-            
-            // 如果是选择题或判断题，标记选项的对错
-            if (current.type === 'choice' || current.type === 'judge') {
-                const options = document.querySelectorAll('#choiceOptions .option');
-                options.forEach(opt => {
-                    opt.style.pointerEvents = 'none'; // 禁用点击
-                    opt.classList.remove('selected');
-                    
-                    let optLetter = '';
-                    if (current.type === 'choice') {
-                        optLetter = opt.textContent.match(/^([A-D])/)?.[1];
-                    } else {
-                        optLetter = opt.textContent.includes('√') ? '√' : '×';
-                    }
-                    
-                    const correctLetter = current.answer.match(/[A-D√×]/)?.[0];
-                    
-                    if (optLetter === correctLetter) {
-                        opt.classList.add('correct');
-                    } else if (optLetter === result.userAnswer) {
-                        opt.classList.add('wrong');
-                    }
-                });
-            }
-            
-            const resultBox = document.getElementById('resultBox');
-            const resultHeader = document.getElementById('resultHeader');
-            
-            if (result.isCorrect) {
-                resultBox.className = 'result-box result-correct';
-                resultHeader.innerHTML = '✓ 回答正确！';
-                document.getElementById('correctAnsDiv').style.display = 'none';
-            } else {
-                resultBox.className = 'result-box result-wrong';
-                resultHeader.innerHTML = '✗ 回答错误';
-                document.getElementById('correctAnsDiv').style.display = 'block';
-                document.getElementById('correctAns').textContent = result.correctAnswer;
-            }
-            
-            document.getElementById('userAns').textContent = result.userAnswer;
-            
-            document.getElementById('prevBtn').disabled = currentQuestion === 0;
-            
-            if (currentQuestion === questions.length - 1) {
-                document.getElementById('nextBtn').classList.add('hidden');
-                document.getElementById('finishBtn').classList.remove('hidden');
-            } else {
-                document.getElementById('nextBtn').classList.remove('hidden');
-                document.getElementById('finishBtn').classList.add('hidden');
-            }
-        }
-
-        function nextQuestion() {
-            if (currentQuestion < questions.length - 1) {
-                currentQuestion++;
-                displayQuestion();
-            }
-        }
-
-        function prevQuestion() {
-            if (currentQuestion > 0) {
-                currentQuestion--;
-                displayQuestion();
-            }
-        }
-
-        function updateRecordGrid() {
-            const grid = document.getElementById('recordGrid');
-            grid.innerHTML = '';
-            
-            questions.forEach((_, idx) => {
-                const item = document.createElement('div');
-                item.className = 'record-item';
-                item.textContent = idx + 1;
-                
-                if (!results[idx]) {
-                    item.classList.add('unanswered');
-                } else if (results[idx].isCorrect) {
-                    item.classList.add('correct');
-                } else {
-                    item.classList.add('wrong');
-                }
-                
-                if (idx === currentQuestion) {
-                    item.classList.add('active');
-                }
-                
-                item.onclick = () => {
-                    currentQuestion = idx;
-                    displayQuestion();
-                    updateRecordGrid();
-                };
-                
-                grid.appendChild(item);
+                setTimeout(() => {
+                    button.innerText = originalText;
+                    button.style.background = 'rgba(255, 255, 255, 0.1)';
+                    button.style.borderColor = 'rgba(255, 255, 255, 0.2)';
+                }, 2000);
+            }).catch(err => {
+                console.error('Failed to copy text: ', err);
             });
-        }
-
-        function finishQuiz() {
-            const total = questions.length;
-            const answered = results.filter(r => r !== null).length;
-            const correct = totalScore;
-            const wrong = answered - totalScore;
-            const rate = total > 0 ? ((correct / total) * 100).toFixed(1) : 0;
-            
-            alert(`测验完成！\n\n总题数：${total}\n已答题：${answered}\n正确：${correct}\n错误：${wrong}\n正确率：${rate}%`);
-        }
-
-        function resetQuiz() {
-            if (confirm('确定要重新开始吗？当前进度将会丢失。')) {
-                questions = [];
-                currentQuestion = 0;
-                results = [];
-                totalScore = 0;
-                
-                document.getElementById('uploadSection').classList.remove('hidden');
-                document.getElementById('quizSection').classList.add('hidden');
-                document.getElementById('resetBtn').classList.add('hidden');
-                document.getElementById('fileInput').value = '';
-                document.getElementById('parseInfo').classList.add('hidden');
-            }
         }
     </script>
 </body>
