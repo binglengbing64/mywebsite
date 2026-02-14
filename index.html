@@ -1,360 +1,479 @@
-
 <!DOCTYPE html>
 <html lang="zh-CN">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>XFCE 轻量级桌面一键安装指南 (飞牛OS/Debian)</title>
+    <title>冰凝之境 - 渐变配色工具</title>
     <style>
-        :root {
-            --primary-color: #2563eb;
-            --text-color: #333;
-            --bg-color: #f8f9fa;
-            --code-bg: #1e1e1e;
-            --code-text: #d4d4d4;
-            --sidebar-width: 280px;
-        }
-
-        body {
-            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, "Microsoft YaHei", sans-serif;
-            line-height: 1.6;
-            color: var(--text-color);
-            background-color: var(--bg-color);
+        * {
             margin: 0;
-            display: flex;
-        }
-
-        /* Sidebar Styles */
-        .sidebar {
-            width: var(--sidebar-width);
-            height: 100vh;
-            background: white;
-            padding: 2rem;
-            position: fixed;
-            overflow-y: auto;
-            border-right: 1px solid #ddd;
+            padding: 0;
             box-sizing: border-box;
         }
-
-        .sidebar h2 {
-            font-size: 1.2rem;
-            margin-bottom: 1rem;
-            color: var(--primary-color);
+        
+        body {
+            font-family: 'Segoe UI', system-ui, sans-serif;
+            background: #f0f0f0;
+            padding: 20px;
         }
-
-        .sidebar ul {
-            list-style: none;
-            padding: 0;
+        
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
         }
-
-        .sidebar li {
-            margin-bottom: 0.8rem;
-        }
-
-        .sidebar a {
-            text-decoration: none;
-            color: #555;
-            font-size: 0.95rem;
-            transition: color 0.2s;
-        }
-
-        .sidebar a:hover {
-            color: var(--primary-color);
-            font-weight: 600;
-        }
-
-        /* Main Content Styles */
-        .main-content {
-            margin-left: var(--sidebar-width);
-            padding: 2rem 4rem;
-            max-width: 900px;
-            width: 100%;
-        }
-
+        
         h1 {
-            font-size: 2.5rem;
-            border-bottom: 3px solid var(--primary-color);
-            padding-bottom: 0.5rem;
-            margin-bottom: 2rem;
+            text-align: center;
+            color: #1e3a8a;
+            margin-bottom: 30px;
+            font-size: 2rem;
         }
-
-        h2 {
-            margin-top: 3rem;
-            padding-bottom: 0.5rem;
-            border-bottom: 1px solid #ddd;
+        
+        .layout {
+            display: grid;
+            grid-template-columns: 400px 1fr;
+            gap: 20px;
+        }
+        
+        /* 左侧控制面板 */
+        .control-panel {
+            background: white;
+            padding: 25px;
+            border-radius: 12px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+            height: fit-content;
+            position: sticky;
+            top: 20px;
+        }
+        
+        .color-group {
+            margin-bottom: 25px;
+        }
+        
+        .color-group h3 {
+            font-size: 0.9rem;
+            color: #64748b;
+            margin-bottom: 12px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+        
+        .color-input {
             display: flex;
             align-items: center;
+            gap: 10px;
+            margin-bottom: 10px;
         }
-
-        h2::before {
-            content: '#';
-            color: var(--primary-color);
-            margin-right: 0.5rem;
-            font-weight: bold;
+        
+        .color-input label {
+            flex: 1;
+            font-size: 0.85rem;
+            color: #475569;
         }
-
-        h3 {
-            margin-top: 1.5rem;
-            color: #444;
+        
+        .color-input input[type="color"] {
+            width: 50px;
+            height: 35px;
+            border: 2px solid #e2e8f0;
+            border-radius: 6px;
+            cursor: pointer;
         }
-
-        /* Code Block Styles */
-        .code-container {
-            position: relative;
-            margin: 1rem 0;
+        
+        .color-input input[type="text"] {
+            width: 90px;
+            padding: 6px 8px;
+            border: 1px solid #e2e8f0;
+            border-radius: 6px;
+            font-size: 0.85rem;
+            font-family: monospace;
         }
-
-        pre {
-            background-color: var(--code-bg);
-            color: var(--code-text);
-            padding: 1.2rem;
+        
+        .preset-buttons {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            margin-top: 20px;
+        }
+        
+        .preset-btn {
+            padding: 10px 15px;
+            border: 1px solid #e2e8f0;
+            background: white;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 0.9rem;
+            transition: all 0.2s;
+        }
+        
+        .preset-btn:hover {
+            background: #f1f5f9;
+            border-color: #3b82f6;
+        }
+        
+        .copy-btn {
+            width: 100%;
+            padding: 12px;
+            background: linear-gradient(135deg, #3b82f6, #60a5fa);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            margin-top: 20px;
+            transition: transform 0.2s;
+        }
+        
+        .copy-btn:hover {
+            transform: translateY(-2px);
+        }
+        
+        /* 右侧预览区 */
+        .preview-area {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+        
+        .preview-box {
+            border-radius: 12px;
+            padding: 40px;
+            min-height: 400px;
+            box-shadow: 0 8px 32px rgba(0,0,0,0.1);
+            transition: background 0.3s;
+        }
+        
+        .preview-content {
+            background: rgba(255, 255, 255, 0.8);
+            padding: 30px;
+            border-radius: 12px;
+            margin-bottom: 20px;
+        }
+        
+        .preview-content h2 {
+            font-size: 1.8rem;
+            margin-bottom: 15px;
+        }
+        
+        .preview-content p {
+            line-height: 1.6;
+            margin-bottom: 15px;
+        }
+        
+        .preview-button {
+            display: inline-block;
+            padding: 12px 24px;
+            background: var(--accent-blue, #3b82f6);
+            color: white;
+            border-radius: 8px;
+            text-decoration: none;
+            font-weight: 600;
+            transition: all 0.3s;
+        }
+        
+        .preview-button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);
+        }
+        
+        .css-code {
+            background: white;
+            border-radius: 12px;
+            padding: 20px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+        }
+        
+        .css-code h3 {
+            margin-bottom: 15px;
+            color: #1e293b;
+        }
+        
+        .css-code pre {
+            background: #1e293b;
+            color: #e2e8f0;
+            padding: 20px;
             border-radius: 8px;
             overflow-x: auto;
-            font-family: 'Consolas', 'Monaco', 'Courier New', monospace;
-            font-size: 0.95rem;
+            font-size: 0.85rem;
+            line-height: 1.6;
         }
-
-        .copy-btn {
-            position: absolute;
-            top: 10px;
-            right: 10px;
-            background: rgba(255, 255, 255, 0.1);
-            border: 1px solid rgba(255, 255, 255, 0.2);
-            color: #fff;
-            padding: 4px 8px;
-            border-radius: 4px;
-            cursor: pointer;
-            font-size: 0.8rem;
-            transition: background 0.2s;
+        
+        .success-msg {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: #10b981;
+            color: white;
+            padding: 15px 25px;
+            border-radius: 8px;
+            box-shadow: 0 4px 12px rgba(16, 185, 129, 0.3);
+            display: none;
+            animation: slideIn 0.3s;
         }
-
-        .copy-btn:hover {
-            background: rgba(255, 255, 255, 0.2);
-        }
-
-        /* Callout/Alert Styles */
-        .alert {
-            padding: 1rem;
-            border-radius: 6px;
-            margin: 1rem 0;
-            border-left: 4px solid;
-        }
-
-        .alert-info {
-            background-color: #e0f2fe;
-            border-color: #0284c7;
-            color: #0c4a6e;
-        }
-
-        .alert-warning {
-            background-color: #fef3c7;
-            border-color: #d97706;
-            color: #78350f;
-        }
-
-        .tag {
-            display: inline-block;
-            background: #e5e7eb;
-            padding: 2px 6px;
-            border-radius: 4px;
-            font-weight: bold;
-            font-size: 0.9em;
-        }
-
-        @media (max-width: 768px) {
-            .sidebar {
-                display: none;
+        
+        @keyframes slideIn {
+            from {
+                transform: translateX(400px);
+                opacity: 0;
             }
-            .main-content {
-                margin-left: 0;
-                padding: 1rem;
+            to {
+                transform: translateX(0);
+                opacity: 1;
             }
         }
     </style>
 </head>
 <body>
-
-    <nav class="sidebar">
-        <h2>📑 目录导航</h2>
-        <ul>
-            <li><a href="#step1">1. 卸载 KDE (清理环境)</a></li>
-            <li><a href="#step2">2. 安装 XFCE + LightDM</a></li>
-            <li><a href="#step3">3. 安装基本工具</a></li>
-            <li><a href="#cn-lang">4. XFCE 汉化方案</a></li>
-            <li><a href="#browsers">5. 安装浏览器 (Firefox/Chrome)</a></li>
-            <li><a href="#stores">6. 应用商店推荐</a></li>
-            <li><a href="#wifi">7. WiFi 网络管理配置</a></li>
-        </ul>
-    </nav>
-
-    <main class="main-content">
-        <h1>XFCE 极简安装指南 <small style="font-size:0.5em; color:#666">for Debian / 飞牛OS</small></h1>
-
-        <div class="alert alert-warning">
-            <strong>注意：</strong> 本指南适用于希望将系统轻量化的用户。如果正在使用虚拟机，推荐严格按照 LightDM 步骤操作。
-        </div>
-
-        <section id="step1">
-            <h2>1. 完整卸载 KDE (可选，但推荐)</h2>
-            <p>先卸载 KDE，如果你还没卸干净，请使用完整版卸载指令：</p>
-            <div class="code-container">
-                <button class="copy-btn" onclick="copyCode(this)">复制</button>
-                <pre>sudo apt remove --purge 'kde*' plasma-desktop sddm-theme-debian-breeze sddm-theme-debian-maui sddm
-sudo apt autoremove --purge -y</pre>
-            </div>
-        </section>
-
-        <section id="step2">
-            <h2>2. 安装 XFCE + LightDM (最兼容)</h2>
-            <p>SDDM 在虚拟机常炸，<strong>LightDM</strong> 最稳。</p>
-            <div class="code-container">
-                <button class="copy-btn" onclick="copyCode(this)">复制</button>
-                <pre>sudo apt update
-sudo apt install xfce4 lightdm -y</pre>
-            </div>
-            <div class="alert alert-info">
-                💡 <strong>关键步骤：</strong> 安装时会问你使用哪个 display manager？<br>
-                请务必选择 <strong>lightdm</strong>。
-            </div>
-        </section>
-
-        <section id="step3">
-            <h2>3. 安装基本工具 (可选)</h2>
-            <p>这会装：电源管理、小插件、任务栏增强等。</p>
-            <div class="code-container">
-                <button class="copy-btn" onclick="copyCode(this)">复制</button>
-                <pre>sudo apt install xfce4-goodies -y
-sudo reboot</pre>
-            </div>
-        </section>
-
-        <section id="cn-lang">
-            <h2>4. XFCE 汉化方案</h2>
-            
-            <h3>① 安装中文语言包</h3>
-            <div class="code-container">
-                <button class="copy-btn" onclick="copyCode(this)">复制</button>
-                <pre>sudo apt update
-sudo apt install locales task-chinese-s -y</pre>
-            </div>
-
-            <h3>② 开启中文语言环境</h3>
-            <div class="code-container">
-                <button class="copy-btn" onclick="copyCode(this)">复制</button>
-                <pre>sudo dpkg-reconfigure locales</pre>
-            </div>
-            <ul>
-                <li>进入界面后勾选：<code>zh_CN.UTF-8 UTF-8</code></li>
-                <li>建议保留：<code>en_US.UTF-8 UTF-8</code></li>
-                <li>默认 Locale (Default locale) 选择：<strong>zh_CN.UTF-8</strong></li>
-            </ul>
-
-            <h3>③ 安装中文字体 & 输入法</h3>
-            <div class="code-container">
-                <button class="copy-btn" onclick="copyCode(this)">复制</button>
-                <pre># 安装字体
-sudo apt install fonts-wqy-zenhei fonts-wqy-microhei -y
-
-# 安装 Fcitx5 输入法 (可选)
-sudo apt install fcitx5 fcitx5-chinese-addons -y
-im-config -n fcitx5</pre>
-            </div>
-            <p>完成后请 <code>sudo reboot</code> 重启系统。</p>
-        </section>
-
-        <section id="browsers">
-            <h2>5. 安装浏览器</h2>
-
-            <h3>✅ 方案 A：Firefox ESR (最稳)</h3>
-            <div class="code-container">
-                <button class="copy-btn" onclick="copyCode(this)">复制</button>
-                <pre>sudo apt install firefox-esr</pre>
-            </div>
-
-            <h3>✅ 方案 B：Google Chrome (翻译好用)</h3>
-            <div class="code-container">
-
-<button class="copy-btn" onclick="copyCode(this)">复制</button>
-                <pre>wget https://dl.google.com/linux/direct/google-chrome-stable_current_amd64.deb
-sudo apt install ./google-chrome-stable_current_amd64.deb</pre>
-            </div>
-            
-            <div class="alert alert-warning">
-                <strong>Root 用户注意：</strong> Chrome 默认不允许 root 运行。解决方法：
-                <br>命令运行：<code>google-chrome-stable --no-sandbox</code>
-                <br>或者修改启动器命令为：<code>/usr/bin/google-chrome-stable --no-sandbox %u</code>
-            </div>
-        </section>
-
-        <section id="stores">
-            <h2>6. 应用商店推荐</h2>
-            <p>XFCE 本身没有商店，推荐安装 <strong>GNOME Software</strong>，兼容性最好。</p>
-            <div class="code-container">
-                <button class="copy-btn" onclick="copyCode(this)">复制</button>
-                <pre>sudo apt update
-sudo apt install gnome-software gnome-software-plugin-flatpak</pre>
-            </div>
-        </section>
-
-        <section id="wifi">
-            <h2>7. WiFi 网络管理配置 (关键)</h2>
-            <p>飞牛OS 等服务器系统通常不带 WiFi GUI，需要手动安装 NetworkManager。</p>
-
-            <h3>① 安装 NetworkManager 组件</h3>
-            <div class="code-container">
-                <button class="copy-btn" onclick="copyCode(this)">复制</button>
-                <pre>sudo apt install network-manager network-manager-gnome -y</pre>
-            </div>
-
-            <h3>② 禁用旧网络服务 & 启用新服务</h3>
-            <div class="code-container">
-                <button class="copy-btn" onclick="copyCode(this)">复制</button>
-                <pre># 停止冲突服务
-sudo systemctl stop networking
-sudo systemctl disable networking
-# 如果有 systemd-networkd 也关掉
-sudo systemctl stop systemd-networkd
-sudo systemctl disable systemd-networkd
-
-# 启用 NetworkManager
-sudo systemctl enable NetworkManager
-sudo systemctl start NetworkManager</pre>
-            </div>
-
-            <h3>③ 启动托盘图标</h3>
-            <div class="code-container">
-                <button class="copy-btn" onclick="copyCode(this)">复制</button>
-                <pre>nm-applet &</pre>
-            </div>
-            <p><em>提示：若要开机自启，请在“设置 → 会话和启动 → 应用自启动”中添加命令 <code>nm-applet</code>。</em></p>
-        </section>
-
-        <footer style="margin-top: 50px; text-align: center; color: #888; padding-bottom: 20px;">
-            <hr>
-            <p>Generated for XFCE Installation Guide</p>
-        </footer>
-    </main>
-
-    <script>
-        function copyCode(button) {
-            const pre = button.nextElementSibling;
-            const code = pre.innerText;
-            
-            navigator.clipboard.writeText(code).then(() => {
-                const originalText = button.innerText;
-                button.innerText = '已复制!';
-                button.style.background = '#10b981';
-                button.style.borderColor = '#10b981';
+    <div class="container">
+        <h1>渐变配色工具</h1>
+        
+        <div class="layout">
+            <!-- 左侧控制面板 -->
+            <div class="control-panel">
+                <div class="color-group">
+                    <h3>背景渐变色</h3>
+                    <div class="color-input">
+                        <label>起始色</label>
+                        <input type="color" id="grad1" value="#3b82f6">
+                        <input type="text" id="grad1-text" value="#3b82f6">
+                    </div>
+                    <div class="color-input">
+                        <label>中间色1</label>
+                        <input type="color" id="grad2" value="#60a5fa">
+                        <input type="text" id="grad2-text" value="#60a5fa">
+                    </div>
+                    <div class="color-input">
+                        <label>中间色2</label>
+                        <input type="color" id="grad3" value="#93c5fd">
+                        <input type="text" id="grad3-text" value="#93c5fd">
+                    </div>
+                    <div class="color-input">
+                        <label>中间色3</label>
+                        <input type="color" id="grad4" value="#dbeafe">
+                        <input type="text" id="grad4-text" value="#dbeafe">
+                    </div>
+                    <div class="color-input">
+                        <label>结束色</label>
+                        <input type="color" id="grad5" value="#ffffff">
+                        <input type="text" id="grad5-text" value="#ffffff">
+                    </div>
+                </div>
                 
+                <div class="color-group">
+                    <h3>文字颜色</h3>
+                    <div class="color-input">
+                        <label>主文字</label>
+                        <input type="color" id="textPrimary" value="#2563eb">
+                        <input type="text" id="textPrimary-text" value="#2563eb">
+                    </div>
+                    <div class="color-input">
+                        <label>次文字</label>
+                        <input type="color" id="textSecondary" value="#60a5fa">
+                        <input type="text" id="textSecondary-text" value="#60a5fa">
+                    </div>
+                </div>
+                
+                <div class="color-group">
+                    <h3>强调色</h3>
+                    <div class="color-input">
+                        <label>按钮/链接</label>
+                        <input type="color" id="accentBlue" value="#0ea5e9">
+                        <input type="text" id="accentBlue-text" value="#0ea5e9">
+                    </div>
+                </div>
+                
+                <div class="preset-buttons">
+                    <h3 style="margin-bottom: 10px;">预设方案</h3>
+                    <button class="preset-btn" onclick="applyPreset('original')">🌊 原始配色</button>
+                    <button class="preset-btn" onclick="applyPreset('light')">☁️ 轻柔冰雪</button>
+                    <button class="preset-btn" onclick="applyPreset('medium')">❄️ 适中冰蓝</button>
+                    <button class="preset-btn" onclick="applyPreset('vibrant')">💎 鲜艳冰晶</button>
+                </div>
+                
+                <button class="copy-btn" onclick="copyCSSCode()">📋 复制 CSS 代码</button>
+            </div>
+            
+            <!-- 右侧预览区 -->
+            <div class="preview-area">
+                <div class="preview-box" id="previewBox">
+                    <div class="preview-content">
+                        <h2 id="previewTitle">这是一个标题</h2>
+                        <p id="previewText">这是一个示例段落，用于预览文字颜色效果。你可以看到主文字和次要文字的对比度。</p>
+                        <p id="previewTextSecondary" style="color: var(--text-secondary);">这是次要文字颜色的示例，通常用于辅助信息或说明文本。</p>
+                        <a href="#" class="preview-button">了解更多</a>
+                    </div>
+                </div>
+                
+                <div class="css-code">
+                    <h3>生成的 CSS 代码</h3>
+                    <pre id="cssOutput"></pre>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="success-msg" id="successMsg">✓ CSS 代码已复制到剪贴板！</div>
+    
+    <script>
+        // 预设配色方案
+        const presets = {
+            original: {
+                grad1: '#60a5fa',
+                grad2: '#93c5fd',
+                grad3: '#bfdbfe',
+                grad4: '#dbeafe',
+                grad5: '#f0f9ff',
+                textPrimary: '#2563eb',
+                textSecondary: '#60a5fa',
+                accentBlue: '#0ea5e9'
+            },
+            light: {
+                grad1: '#93c5fd',
+                grad2: '#bfdbfe',
+                grad3: '#dbeafe',
+                grad4: '#f0f9ff',
+                grad5: '#ffffff',
+                textPrimary: '#3b82f6',
+                textSecondary: '#60a5fa',
+                accentBlue: '#0ea5e9'
+            },
+            medium: {
+                grad1: '#3b82f6',
+                grad2: '#60a5fa',
+                grad3: '#93c5fd',
+                grad4: '#dbeafe',
+                grad5: '#f0f9ff',
+                textPrimary: '#1e40af',
+                textSecondary: '#3b82f6',
+                accentBlue: '#0284c7'
+            },
+            vibrant: {
+                grad1: '#2563eb',
+                grad2: '#3b82f6',
+                grad3: '#60a5fa',
+                grad4: '#93c5fd',
+                grad5: '#dbeafe',
+                textPrimary: '#1e3a8a',
+                textSecondary: '#2563eb',
+                accentBlue: '#0369a1'
+            }
+        };
+        
+        // 初始化
+        function init() {
+            // 为所有颜色输入添加事件监听
+            const colorInputs = document.querySelectorAll('input[type="color"]');
+            colorInputs.forEach(input => {
+                input.addEventListener('input', (e) => {
+                    const textInput = document.getElementById(e.target.id + '-text');
+                    textInput.value = e.target.value;
+                    updatePreview();
+                });
+            });
+            
+            // 为文本输入添加事件监听
+            const textInputs = document.querySelectorAll('input[type="text"]');
+            textInputs.forEach(input => {
+                input.addEventListener('input', (e) => {
+                    const colorInput = document.getElementById(e.target.id.replace('-text', ''));
+                    if (/^#[0-9A-F]{6}$/i.test(e.target.value)) {
+                        colorInput.value = e.target.value;
+                        updatePreview();
+                    }
+                });
+            });
+            
+            updatePreview();
+        }
+        
+        // 更新预览
+        function updatePreview() {
+            const grad1 = document.getElementById('grad1').value;
+            const grad2 = document.getElementById('grad2').value;
+            const grad3 = document.getElementById('grad3').value;
+            const grad4 = document.getElementById('grad4').value;
+            const grad5 = document.getElementById('grad5').value;
+            const textPrimary = document.getElementById('textPrimary').value;
+            const textSecondary = document.getElementById('textSecondary').value;
+            const accentBlue = document.getElementById('accentBlue').value;
+            
+            const gradient = `linear-gradient(135deg, ${grad1} 0%, ${grad2} 25%, ${grad3} 50%, ${grad4} 75%, ${grad5} 100%)`;
+            
+            const previewBox = document.getElementById('previewBox');
+            previewBox.style.background = gradient;
+            
+            document.getElementById('previewTitle').style.color = textPrimary;
+            document.getElementById('previewText').style.color = textPrimary;
+            document.getElementById('previewTextSecondary').style.color = textSecondary;
+            document.querySelector('.preview-button').style.background = accentBlue;
+            
+            updateCSSCode();
+        }
+        
+        // 更新CSS代码
+        function updateCSSCode() {
+            const grad1 = document.getElementById('grad1').value;
+            const grad2 = document.getElementById('grad2').value;
+            const grad3 = document.getElementById('grad3').value;
+            const grad4 = document.getElementById('grad4').value;
+            const grad5 = document.getElementById('grad5').value;
+            const textPrimary = document.getElementById('textPrimary').value;
+            const textSecondary = document.getElementById('textSecondary').value;
+            const accentBlue = document.getElementById('accentBlue').value;
+            
+            const cssCode = `[data-theme="day"] {
+    --bg-gradient: linear-gradient(135deg, 
+        ${grad1} 0%, 
+        ${grad2} 25%, 
+        ${grad3} 50%, 
+        ${grad4} 75%, 
+        ${grad5} 100%);
+    
+    --card-bg: rgba(255, 255, 255, 0.8);
+    --nav-bg: rgba(255, 255, 255, 0.4);
+    
+    --text-primary: ${textPrimary};
+    --text-secondary: ${textSecondary};
+    
+    --accent-blue: ${accentBlue};
+    --accent-purple: ${grad2};
+    
+    --crystal-border: rgba(147, 197, 253, 0.4);
+    --shadow: 0 8px 32px rgba(96, 165, 250, 0.12);
+}`;
+            
+            document.getElementById('cssOutput').textContent = cssCode;
+        }
+        
+        // 应用预设
+        function applyPreset(presetName) {
+            const preset = presets[presetName];
+            
+            Object.keys(preset).forEach(key => {
+                const colorInput = document.getElementById(key);
+                const textInput = document.getElementById(key + '-text');
+                
+                colorInput.value = preset[key];
+                textInput.value = preset[key];
+            });
+            
+            updatePreview();
+        }
+        
+        // 复制CSS代码
+        function copyCSSCode() {
+            const cssCode = document.getElementById('cssOutput').textContent;
+            navigator.clipboard.writeText(cssCode).then(() => {
+                const msg = document.getElementById('successMsg');
+                msg.style.display = 'block';
                 setTimeout(() => {
-                    button.innerText = originalText;
-                    button.style.background = 'rgba(255, 255, 255, 0.1)';
-                    button.style.borderColor = 'rgba(255, 255, 255, 0.2)';
+                    msg.style.display = 'none';
                 }, 2000);
-            }).catch(err => {
-                console.error('Failed to copy text: ', err);
             });
         }
+        
+        // 页面加载时初始化
+        window.addEventListener('load', init);
     </script>
 </body>
 </html>
